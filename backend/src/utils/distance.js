@@ -1,0 +1,2 @@
+// distance.js
+module.exports = {};

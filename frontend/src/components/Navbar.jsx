@@ -56,6 +56,7 @@ export default function Navbar({ setIsOpen }) {
   };
 
   const theme = roleTheme[user?.role] || roleTheme.farmer;
+  const roleLabel = t(`role${user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'Farmer'}`);
 
   const handleLogout = () => {
     logout();
@@ -138,7 +139,7 @@ export default function Navbar({ setIsOpen }) {
           {notifOpen && (
             <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-200 z-50 animate-fade-in-up overflow-hidden">
               <div className="p-3 border-b border-gray-100">
-                <h3 className="font-semibold text-gray-900 text-sm">Notifications</h3>
+                <h3 className="font-semibold text-gray-900 text-sm">{t('notifications')}</h3>
               </div>
               <div className="divide-y divide-gray-50 max-h-64 overflow-y-auto">
                 {notifications.map(n => (
@@ -155,7 +156,7 @@ export default function Navbar({ setIsOpen }) {
                 ))}
               </div>
               <div className="p-2 border-t border-gray-100 text-center">
-                <button className="text-xs text-green-700 font-medium hover:underline">View all notifications</button>
+                <button className="text-xs text-green-700 font-medium hover:underline">{t('viewAllNotifications')}</button>
               </div>
             </div>
           )}
@@ -173,7 +174,7 @@ export default function Navbar({ setIsOpen }) {
             <div className="hidden sm:block text-left min-w-0">
               <div className="text-sm font-semibold text-gray-900 leading-tight truncate max-w-28">{user?.name}</div>
               <div className={`text-xs px-1.5 py-0.5 rounded-full w-fit ${theme.bg} ${theme.text} font-medium leading-tight`}>
-                {theme.label}
+                {roleLabel}
               </div>
             </div>
             <FiChevronDown className="text-gray-400 text-sm hidden sm:block" />
@@ -186,17 +187,17 @@ export default function Navbar({ setIsOpen }) {
               </div>
               <div className="py-1">
                 <button className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                  <FiUser className="text-gray-400" /> Profile
+                  <FiUser className="text-gray-400" /> {t('profile')}
                 </button>
                 <button className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                  <FiSettings className="text-gray-400" /> Settings
+                  <FiSettings className="text-gray-400" /> {t('settings')}
                 </button>
                 <div className="border-t border-gray-100 mt-1 pt-1">
                   <button
                     onClick={handleLogout}
                     className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                   >
-                    <FiLogOut className="text-red-500" /> Sign Out
+                    <FiLogOut className="text-red-500" /> {t('navLogout')}
                   </button>
                 </div>
               </div>

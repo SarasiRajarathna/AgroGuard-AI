@@ -1,3 +1,5 @@
+import { useLanguage } from '../context/LanguageContext';
+
 const variants = {
   pending: 'bg-amber-100 text-amber-800 border-amber-200',
   confirmed: 'bg-green-100 text-green-800 border-green-200',
@@ -45,10 +47,21 @@ const dots = {
 };
 
 export default function StatusBadge({ status, showDot = true, className = '' }) {
+  let t = (k) => k;
+  try {
+    const lang = useLanguage();
+    if (lang && lang.t) t = lang.t;
+  } catch {
+    // Graceful fallback if rendered outside LanguageProvider
+  }
+
   const statusKey = status?.toLowerCase().replace(' ', '-') || 'pending';
   const variantClass = variants[statusKey] || 'bg-gray-100 text-gray-600 border-gray-200';
   const dotClass = dots[statusKey] || 'bg-gray-400';
-  const label = status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Unknown';
+  const translated = t(`status_${statusKey}`);
+  const label = translated && translated !== `status_${statusKey}` 
+    ? translated 
+    : (status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Unknown');
 
   return (
     <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${variantClass} ${className}`}>

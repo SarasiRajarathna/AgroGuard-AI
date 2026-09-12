@@ -1,55 +1,57 @@
 import { RiLeafLine } from 'react-icons/ri';
 import { FiHome, FiPlusCircle, FiList, FiClipboard, FiMapPin, FiBarChart2, FiUsers, FiBell, FiSettings, FiChevronLeft, FiChevronRight, FiAlertTriangle, FiActivity } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 
-const navConfig = {
-  farmer: [
-    { label: 'Dashboard', icon: FiHome, path: '/farmer/dashboard' },
-    { label: 'New Diagnosis', icon: FiPlusCircle, path: '/farmer/new-case' },
-    { label: 'My Cases', icon: FiList, path: '/farmer/cases' },
-  ],
-  officer: [
-    { label: 'Dashboard', icon: FiHome, path: '/officer/dashboard' },
-    { label: 'Pending Cases', icon: FiClipboard, path: '/officer/cases' },
-    { label: 'Field Visits', icon: FiMapPin, path: '/officer/field-visits' },
-  ],
-  research: [
-    { label: 'Dashboard', icon: FiHome, path: '/research/dashboard' },
-    { label: 'Outbreak Map', icon: FiActivity, path: '/research/outbreaks' },
-    { label: 'Analytics', icon: FiBarChart2, path: '/research/analytics' },
-  ],
-  admin: [
-    { label: 'Dashboard', icon: FiHome, path: '/admin/dashboard' },
-    { label: 'Users', icon: FiUsers, path: '/admin/users' },
-    { label: 'Officers', icon: FiClipboard, path: '/admin/officers' },
-    { label: 'Alerts', icon: FiBell, path: '/admin/alerts' },
-    { label: 'Settings', icon: FiSettings, path: '/admin/settings' },
-  ],
-};
-
 const roleColors = {
   farmer: 'from-green-800 to-green-900',
-  officer: 'from-blue-800 to-blue-900',
-  research: 'from-purple-800 to-purple-900',
-  admin: 'from-gray-800 to-gray-900',
-};
-
-const roleLabels = {
-  farmer: 'Farmer Portal',
-  officer: 'Officer Portal',
-  research: 'Research Portal',
-  admin: 'Admin Panel',
+  officer: 'from-green-800 to-green-900',
+  research: 'from-green-800 to-green-900',
+  admin: 'from-green-800 to-green-900',
 };
 
 export default function Sidebar({ isOpen, setIsOpen }) {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
 
   if (!user) return null;
+
+  const navConfig = {
+    farmer: [
+      { label: t('navDashboard'), icon: FiHome, path: '/farmer/dashboard' },
+      { label: t('navNewDiagnosis'), icon: FiPlusCircle, path: '/farmer/new-case' },
+      { label: t('navCases'), icon: FiList, path: '/farmer/cases' },
+    ],
+    officer: [
+      { label: t('navDashboard'), icon: FiHome, path: '/officer/dashboard' },
+      { label: t('navPendingCases'), icon: FiClipboard, path: '/officer/cases' },
+      { label: t('navVisits'), icon: FiMapPin, path: '/officer/field-visits' },
+    ],
+    research: [
+      { label: t('navDashboard'), icon: FiHome, path: '/research/dashboard' },
+      { label: t('navOutbreaks'), icon: FiActivity, path: '/research/outbreaks' },
+      { label: t('navAnalytics'), icon: FiBarChart2, path: '/research/analytics' },
+    ],
+    admin: [
+      { label: t('navDashboard'), icon: FiHome, path: '/admin/dashboard' },
+      { label: t('navUsers'), icon: FiUsers, path: '/admin/users' },
+      { label: t('navOfficers'), icon: FiClipboard, path: '/admin/officers' },
+      { label: t('navAlerts'), icon: FiBell, path: '/admin/alerts' },
+      { label: t('navSettings'), icon: FiSettings, path: '/admin/settings' },
+    ],
+  };
+
+  const roleLabels = {
+    farmer: t('portalFarmer'),
+    officer: t('portalOfficer'),
+    research: t('portalResearch'),
+    admin: t('portalAdmin'),
+  };
 
   const navItems = navConfig[user.role] || [];
   const gradientClass = roleColors[user.role] || roleColors.farmer;
@@ -130,7 +132,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
           <div className="m-3 p-3 bg-red-500/20 border border-red-400/30 rounded-lg">
             <div className="flex items-center gap-2 mb-1">
               <FiAlertTriangle className="text-red-300 text-sm flex-shrink-0" />
-              <span className="text-red-200 text-xs font-semibold">Active Outbreak</span>
+              <span className="text-red-200 text-xs font-semibold">{t('activeOutbreak')}</span>
             </div>
             <p className="text-white/70 text-xs">Fall Armyworm — N. Western Province</p>
           </div>

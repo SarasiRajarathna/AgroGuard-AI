@@ -1,8 +1,17 @@
 import { FiActivity, FiMapPin, FiCalendar, FiArrowRight } from 'react-icons/fi';
 import { RiLeafLine } from 'react-icons/ri';
 import StatusBadge from './StatusBadge';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function DiseaseCard({ caseItem, onClick }) {
+  let t = (k) => k;
+  try {
+    const lang = useLanguage();
+    if (lang && lang.t) t = lang.t;
+  } catch {
+    // fallback if outside provider
+  }
+
   if (!caseItem) return null;
 
   const severityColors = {
@@ -11,6 +20,8 @@ export default function DiseaseCard({ caseItem, onClick }) {
     high: 'bg-orange-100 text-orange-800 border-orange-200',
     critical: 'bg-red-100 text-red-800 border-red-200',
   };
+
+  const severityTranslated = t(`status_${caseItem.severity}`) || caseItem.severity;
 
   return (
     <div
@@ -36,11 +47,11 @@ export default function DiseaseCard({ caseItem, onClick }) {
 
       <div className="space-y-2 mb-4 text-xs text-gray-600">
         <div className="flex items-center justify-between">
-          <span className="text-gray-500">Crop:</span>
+          <span className="text-gray-500">{t('cropLabel')}:</span>
           <span className="font-medium text-gray-800">{caseItem.cropType} {caseItem.variety ? `(${caseItem.variety})` : ''}</span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-gray-500">AI Confidence:</span>
+          <span className="text-gray-500">{t('confidenceScore')}:</span>
           <div className="flex items-center gap-1.5">
             <div className="w-16 bg-gray-200 rounded-full h-1.5 overflow-hidden">
               <div
@@ -54,9 +65,9 @@ export default function DiseaseCard({ caseItem, onClick }) {
           </div>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-gray-500">Severity:</span>
+          <span className="text-gray-500">{t('severityLevel')}:</span>
           <span className={`px-2 py-0.5 rounded text-[11px] font-medium border capitalize ${severityColors[caseItem.severity] || severityColors.medium}`}>
-            {caseItem.severity}
+            {severityTranslated}
           </span>
         </div>
         <div className="flex items-center gap-1 text-gray-500 pt-1 border-t border-gray-100">
@@ -70,7 +81,7 @@ export default function DiseaseCard({ caseItem, onClick }) {
           {new Date(caseItem.submittedAt).toLocaleDateString()}
         </span>
         <span className="flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-          View Case <FiArrowRight size={13} />
+          {t('viewCase')} <FiArrowRight size={13} />
         </span>
       </div>
     </div>

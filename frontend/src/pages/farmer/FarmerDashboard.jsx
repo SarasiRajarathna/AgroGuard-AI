@@ -9,10 +9,12 @@ import EmptyState from '../../components/EmptyState';
 import Loading from '../../components/Loading';
 import { casesAPI, adminAPI, weatherAPI, alertsAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function FarmerDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [filter, setFilter] = useState('all');
   const [cases, setCases] = useState([]);
   const [stats, setStats] = useState(null);
@@ -73,15 +75,15 @@ export default function FarmerDashboard() {
     <div className="space-y-6">
       {/* Page Header */}
       <PageHeader
-        title={`Ayubowan, ${user?.name?.split(' ')[0] || 'Ruwan'}`}
-        subtitle={`Farm: ${user?.farmLocation || user?.location || 'Ampara, Eastern Province'} • Real-time Crop Protection Overview`}
+        title={`${t('farmerGreeting')}, ${user?.name?.split(' ')[0] || 'Ruwan'}`}
+        subtitle={`Farm: ${user?.farmLocation || user?.location || 'Ampara, Eastern Province'} • ${t('farmerSubtitle')}`}
         action={
           <button
             onClick={() => navigate('/farmer/new-case')}
             className="flex items-center gap-2 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-semibold rounded-xl shadow-sm hover:shadow transition-all"
           >
             <FiPlus size={18} />
-            <span>New Crop Diagnosis</span>
+            <span>{t('newCropDiagnosisBtn')}</span>
           </button>
         }
       />
@@ -95,14 +97,14 @@ export default function FarmerDashboard() {
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold uppercase tracking-wider text-amber-900 bg-amber-200/80 px-2 py-0.5 rounded">
-                Active Regional Alert
+                {t('activeRegionalAlert')}
               </span>
               <span className="text-xs text-amber-800 font-medium">
                 {activeAlert?.province || 'Eastern Province'} • {activeAlert?.cropTarget || 'Paddy Cluster'}
               </span>
             </div>
             <h3 className="font-bold text-gray-900 text-sm md:text-base mt-1">
-              {activeAlert?.threatLevel ? `${activeAlert.threatLevel}: ` : ''}High Risk of Pathogen Spore Spread
+              {activeAlert?.threatLevel ? `${activeAlert.threatLevel}: ` : ''}{t('highSporeRisk')}
             </h3>
             <p className="text-xs md:text-sm text-gray-600 mt-0.5">
               {activeAlert?.message || 'Persistent humidity and optimal temperatures favor rapid fungal propagation. Holdings flagged.'}
@@ -113,43 +115,43 @@ export default function FarmerDashboard() {
           onClick={() => navigate('/farmer/new-case')}
           className="whitespace-nowrap px-3.5 py-2 bg-white hover:bg-gray-50 border border-amber-300 text-amber-900 font-semibold text-xs rounded-xl shadow-xs transition-colors"
         >
-          Inspect My Field Now
+          {t('inspectFieldBtn')}
         </button>
       </div>
 
       {/* KPI Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          title="Total Diagnoses"
+          title={t('statTotalDiagnoses')}
           value={total}
           icon={RiLeafLine}
           iconBg="bg-emerald-50 text-emerald-600"
-          subtitle="All crops submitted"
+          subtitle={t('statAllCropsSub')}
         />
         <StatCard
-          title="Confirmed Diseases"
+          title={t('statConfirmedDiseases')}
           value={confirmed}
           icon={FiCheckCircle}
           iconBg="bg-green-50 text-green-600"
           trend="+2"
           trendType="up"
-          subtitle="Validated by AI/Officer"
+          subtitle={t('statValidatedSub')}
         />
         <StatCard
-          title="In Review / Escalated"
+          title={t('statInReview')}
           value={pending}
           icon={FiClock}
           iconBg="bg-amber-50 text-amber-600"
-          subtitle="Under expert evaluation"
+          subtitle={t('statUnderEvalSub')}
         />
         <StatCard
-          title="High Spread Risks"
+          title={t('statHighSpreadRisks')}
           value={highRisk}
           icon={RiRadarLine}
           iconBg="bg-rose-50 text-rose-600"
           trend="Alert"
           trendType="down"
-          subtitle="Spore threat active"
+          subtitle={t('statSporeActiveSub')}
         />
       </div>
 
@@ -158,9 +160,9 @@ export default function FarmerDashboard() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
           <div className="flex items-center gap-2">
             <FiCloudRain className="text-blue-600" size={20} />
-            <h3 className="font-bold text-gray-900 text-sm">Farm Micro-Climate Conditions & Pathogen Index</h3>
+            <h3 className="font-bold text-gray-900 text-sm">{t('microclimateTitle')}</h3>
           </div>
-          <span className="text-xs text-gray-500">Live feed • {weather?.location || 'Ampara Station'}</span>
+          <span className="text-xs text-gray-500">{t('liveFeed')} • {weather?.location || 'Ampara Station'}</span>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -169,9 +171,9 @@ export default function FarmerDashboard() {
               <FiDroplet size={20} />
             </div>
             <div>
-              <p className="text-[11px] text-gray-500 font-medium">Relative Humidity</p>
+              <p className="text-[11px] text-gray-500 font-medium">{t('relativeHumidity')}</p>
               <p className="text-lg font-bold text-gray-900">{currentHumidity}%</p>
-              <span className="text-[10px] text-amber-700 font-medium">High fungal viability</span>
+              <span className="text-[10px] text-amber-700 font-medium">{t('highFungalViability')}</span>
             </div>
           </div>
 
@@ -180,9 +182,9 @@ export default function FarmerDashboard() {
               <FiThermometer size={20} />
             </div>
             <div>
-              <p className="text-[11px] text-gray-500 font-medium">Surface Temp</p>
+              <p className="text-[11px] text-gray-500 font-medium">{t('surfaceTemp')}</p>
               <p className="text-lg font-bold text-gray-900">{currentTemp}°C</p>
-              <span className="text-[10px] text-emerald-700 font-medium">Optimal vegetative</span>
+              <span className="text-[10px] text-emerald-700 font-medium">{t('optimalVegetative')}</span>
             </div>
           </div>
 
@@ -191,9 +193,9 @@ export default function FarmerDashboard() {
               <FiCloudRain size={20} />
             </div>
             <div>
-              <p className="text-[11px] text-gray-500 font-medium">Expected Rain</p>
+              <p className="text-[11px] text-gray-500 font-medium">{t('expectedRain')}</p>
               <p className="text-lg font-bold text-gray-900">{currentRain} mm</p>
-              <span className="text-[10px] text-blue-700 font-medium">Leaf wetness 6+ hrs</span>
+              <span className="text-[10px] text-blue-700 font-medium">{t('leafWetness')}</span>
             </div>
           </div>
 
@@ -202,7 +204,7 @@ export default function FarmerDashboard() {
               <RiRadarLine size={20} />
             </div>
             <div>
-              <p className="text-[11px] text-gray-500 font-medium">Infection Forecast</p>
+              <p className="text-[11px] text-gray-500 font-medium">{t('infectionForecast')}</p>
               <p className="text-lg font-bold text-purple-900">{forecastText}</p>
               <span className="text-[10px] text-purple-700 font-medium">Blast & Blight Watch</span>
             </div>
@@ -214,30 +216,38 @@ export default function FarmerDashboard() {
       <div>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
           <div>
-            <h3 className="font-bold text-gray-900 text-base">Crop Health Records & AI Diagnoses</h3>
-            <p className="text-xs text-gray-500">Track and review symptom progression and treatment schedules</p>
+            <h3 className="font-bold text-gray-900 text-base">{t('cropRecordsTitle')}</h3>
+            <p className="text-xs text-gray-500">{t('cropRecordsSubtitle')}</p>
           </div>
 
           {/* Filter Pills */}
           <div className="flex items-center gap-1.5 bg-gray-100 p-1 rounded-xl self-start sm:self-auto text-xs">
-            {['all', 'confirmed', 'pending', 'escalated'].map((status) => (
-              <button
-                key={status}
-                onClick={() => setFilter(status)}
-                className={`px-3 py-1.5 rounded-lg font-medium capitalize transition-all ${
-                  filter === status
-                    ? 'bg-white text-gray-900 shadow-xs'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                {status}
-              </button>
-            ))}
+            {['all', 'confirmed', 'pending', 'escalated'].map((status) => {
+              const labelMap = {
+                all: t('filterAll'),
+                confirmed: t('filterConfirmed'),
+                pending: t('filterPending'),
+                escalated: t('filterEscalated'),
+              };
+              return (
+                <button
+                  key={status}
+                  onClick={() => setFilter(status)}
+                  className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
+                    filter === status
+                      ? 'bg-white text-gray-900 shadow-xs'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  {labelMap[status] || status}
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {loading ? (
-          <Loading message="Loading crop diagnoses..." />
+          <Loading message={t('loadingDiagnoses')} />
         ) : farmerCases.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {farmerCases.map((c) => (
@@ -250,9 +260,9 @@ export default function FarmerDashboard() {
           </div>
         ) : (
           <EmptyState
-            title="No records matching filter"
-            message="No cases match your selected status filter."
-            actionLabel="Reset Filter"
+            title={t('noRecordsTitle')}
+            message={t('noRecordsMessage')}
+            actionLabel={t('resetFilter')}
             onAction={() => setFilter('all')}
           />
         )}

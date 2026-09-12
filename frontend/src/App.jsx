@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
 import Layout from './components/Layout';
+import HomePage from './pages/HomePage';
 
 // Pages
 import Login from './pages/Login';
@@ -23,11 +24,11 @@ function ProtectedLayout({ children }) {
   return <Layout>{children}</Layout>;
 }
 
-// Redirects root "/" to user role dashboard or login
+// Root: show HomePage to guests, redirect authenticated users to their dashboard
 function RootRedirect() {
   const { user } = useAuth();
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <HomePage />;
   }
   return <Navigate to={`/${user.role}`} replace />;
 }

@@ -142,7 +142,7 @@ export default function App() {
             path="/research"
             element={
               <ProtectedLayout>
-                <ResearchDashboard />
+                <ResearchDashboard view="dashboard" />
               </ProtectedLayout>
             }
           />
@@ -150,7 +150,7 @@ export default function App() {
             path="/research/dashboard"
             element={
               <ProtectedLayout>
-                <ResearchDashboard />
+                <ResearchDashboard view="dashboard" />
               </ProtectedLayout>
             }
           />
@@ -158,7 +158,7 @@ export default function App() {
             path="/research/outbreaks"
             element={
               <ProtectedLayout>
-                <ResearchDashboard />
+                <ResearchDashboard view="outbreaks" />
               </ProtectedLayout>
             }
           />
@@ -166,7 +166,7 @@ export default function App() {
             path="/research/analytics"
             element={
               <ProtectedLayout>
-                <ResearchDashboard />
+                <ResearchDashboard view="analytics" />
               </ProtectedLayout>
             }
           />
@@ -176,7 +176,7 @@ export default function App() {
             path="/admin"
             element={
               <ProtectedLayout>
-                <AdminDashboard />
+                <AdminDashboard view="dashboard" />
               </ProtectedLayout>
             }
           />
@@ -184,7 +184,7 @@ export default function App() {
             path="/admin/dashboard"
             element={
               <ProtectedLayout>
-                <AdminDashboard />
+                <AdminDashboard view="dashboard" />
               </ProtectedLayout>
             }
           />
@@ -192,7 +192,7 @@ export default function App() {
             path="/admin/users"
             element={
               <ProtectedLayout>
-                <AdminDashboard />
+                <AdminDashboard view="users" />
               </ProtectedLayout>
             }
           />
@@ -200,7 +200,7 @@ export default function App() {
             path="/admin/officers"
             element={
               <ProtectedLayout>
-                <AdminDashboard />
+                <AdminDashboard view="officers" />
               </ProtectedLayout>
             }
           />
@@ -208,7 +208,7 @@ export default function App() {
             path="/admin/alerts"
             element={
               <ProtectedLayout>
-                <AdminDashboard />
+                <AdminDashboard view="alerts" />
               </ProtectedLayout>
             }
           />
@@ -216,7 +216,7 @@ export default function App() {
             path="/admin/settings"
             element={
               <ProtectedLayout>
-                <AdminDashboard />
+                <AdminDashboard view="settings" />
               </ProtectedLayout>
             }
           />

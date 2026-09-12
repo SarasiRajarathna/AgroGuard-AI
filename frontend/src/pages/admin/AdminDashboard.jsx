@@ -10,7 +10,7 @@ import Loading from '../../components/Loading';
 import { adminAPI, alertsAPI } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 
-export default function AdminDashboard() {
+export default function AdminDashboard({ view = 'dashboard' }) {
   const { t } = useLanguage();
   const [toastMessage, setToastMessage] = useState(null);
   const [broadcastModalOpen, setBroadcastModalOpen] = useState(false);
@@ -79,6 +79,111 @@ export default function AdminDashboard() {
     u.role?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (u.location && u.location.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+
+  if (view !== 'dashboard') {
+    const officers = filteredUsers.filter((user) => user.role === 'officer');
+    const directoryUsers = view === 'officers' ? officers : filteredUsers;
+    const title = view === 'users' ? 'User Directory' : view === 'officers' ? 'Extension Officers' : view === 'alerts' ? 'Regional Alerts' : 'System Settings';
+    const subtitle = view === 'users'
+      ? 'Manage registered farmers, officers, researchers, and administrators.'
+      : view === 'officers'
+        ? 'Review active agricultural extension officers and their assigned cases.'
+        : view === 'alerts'
+          ? 'Broadcast and review regional agricultural warning notifications.'
+          : 'Monitor system services and administrative configuration.';
+
+    return (
+      <div className="space-y-6">
+        {toastMessage && (
+          <Toast message={toastMessage} type="success" onClose={() => setToastMessage(null)} />
+        )}
+        <PageHeader
+          title={title}
+          subtitle={subtitle}
+          action={view === 'alerts' ? (
+            <button
+              onClick={() => setBroadcastModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2.5 bg-rose-700 hover:bg-rose-800 text-white rounded-xl text-xs font-semibold"
+            >
+              <RiBroadcastLine size={16} />
+              <span>{t('broadcastAlertBtn')}</span>
+            </button>
+          ) : null}
+        />
+
+        {loading ? (
+          <Loading fullPage message="Loading administration data..." />
+        ) : view === 'settings' ? (
+          <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-xs">
+            <h3 className="font-bold text-gray-900 mb-4">Core Infrastructure & Microservice Health</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {(health?.services || []).map((service) => (
+                <div key={service.name} className="p-4 bg-gray-50 rounded-xl border border-gray-200 flex justify-between gap-4">
+                  <div>
+                    <p className="font-bold text-gray-900">{service.name}</p>
+                    <p className="text-xs text-gray-500">{service.type}</p>
+                  </div>
+                  <span className="text-xs font-bold text-emerald-600">{service.status} · {service.latency}</span>
+                </div>
+              ))}
+            </div>
+            <p className="mt-4 text-xs text-gray-500">Last checked: {health?.lastChecked ? new Date(health.lastChecked).toLocaleString() : 'Unavailable'}</p>
+          </div>
+        ) : view === 'alerts' ? (
+          <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-xs">
+            <h3 className="font-bold text-gray-900">Alert broadcast center</h3>
+            <p className="mt-1 text-sm text-gray-500">Use the broadcast action to send a live warning through the backend alert service.</p>
+            <button onClick={() => setBroadcastModalOpen(true)} className="mt-4 px-4 py-2 bg-rose-700 text-white rounded-xl text-xs font-bold">
+              Create regional alert
+            </button>
+          </div>
+        ) : (
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
+            <div className="p-4 border-b border-gray-100">
+              <input
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search directory..."
+                className="w-full max-w-sm px-3 py-2 text-sm border border-gray-300 rounded-xl"
+              />
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-gray-50 text-xs text-gray-500">
+                  <tr><th className="px-5 py-3">Name</th><th className="px-5 py-3">Role</th><th className="px-5 py-3">Location</th><th className="px-5 py-3">Cases</th></tr>
+                </thead>
+                <tbody>
+                  {directoryUsers.map((user) => (
+                    <tr key={user.id} className="border-t border-gray-100">
+                      <td className="px-5 py-3 font-semibold">{user.name}</td>
+                      <td className="px-5 py-3 capitalize">{user.role}</td>
+                      <td className="px-5 py-3 text-gray-500">{user.location || 'Not specified'}</td>
+                      <td className="px-5 py-3">{user.cases || 0}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {directoryUsers.length === 0 && <p className="p-5 text-sm text-gray-500">No matching records found.</p>}
+            </div>
+          </div>
+        )}
+
+        <Modal isOpen={broadcastModalOpen} onClose={() => setBroadcastModalOpen(false)} title="Broadcast Regional Outbreak Warning">
+          <form onSubmit={handleSendBroadcast} className="space-y-4">
+            <select value={province} onChange={(e) => setProvince(e.target.value)} className="w-full text-sm px-3 py-2 rounded-xl border border-gray-300">
+              <option>Eastern Province</option><option>Central Province</option><option>North Central</option><option>North Western</option><option>Southern Province</option>
+            </select>
+            <select value={threatLevel} onChange={(e) => setThreatLevel(e.target.value)} className="w-full text-sm px-3 py-2 rounded-xl border border-gray-300">
+              <option>Critical</option><option>Elevated</option><option>Advisory</option>
+            </select>
+            <input value={cropTarget} onChange={(e) => setCropTarget(e.target.value)} className="w-full text-sm px-3 py-2 rounded-xl border border-gray-300" placeholder="Target crop" />
+            <textarea required rows={3} value={broadcastMessage} onChange={(e) => setBroadcastMessage(e.target.value)} className="w-full text-sm px-3 py-2 rounded-xl border border-gray-300" />
+            <button type="submit" className="px-4 py-2 bg-rose-700 text-white rounded-xl text-xs font-bold">Send Broadcast</button>
+          </form>
+        </Modal>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

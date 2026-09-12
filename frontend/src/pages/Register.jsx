@@ -1,31 +1,34 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  Phone,
-  User,
-  Sprout,
-  MapPin,
-  CheckCircle2,
-  Globe,
-  Loader2,
-  ArrowRight,
-  Tractor,
-  ShieldCheck,
-  Lock,
-  Eye,
-  EyeOff,
-  Mail,
-  Sparkles,
-  ScanLine,
-  Leaf,
-  Activity,
-  Droplets,
-  ClipboardList,
-} from "lucide-react";
-import { RiLeafLine } from "react-icons/ri";
 
 import { supabase } from "../lib/supabase";
 import PublicNav from "../components/home/PublicNav";
+import {
+  ActivityIcon,
+  AlertIcon,
+  ArrowRightIcon,
+  BuildingIcon,
+  CheckCircleIcon,
+  ChevronDownIcon,
+  ClipboardIcon,
+  DropletIcon,
+  EyeIcon,
+  EyeOffIcon,
+  GlobeIcon,
+  GoogleMark,
+  LeafIcon,
+  LoaderIcon,
+  LockIcon,
+  MailIcon,
+  MapPinIcon,
+  PhoneIcon,
+  ScanIcon,
+  ShieldCheckIcon,
+  SproutIcon,
+  StarIcon,
+  TractorIcon,
+  UserIcon,
+} from "../components/auth/AuthIcons";
 
 const COUNTRIES = [
   "Sri Lankan", "Afghan", "Albanian", "Algerian", "American", "Argentine", "Australian", "Austrian",
@@ -63,6 +66,16 @@ const DISTRICTS = [
   "Trincomalee",
   "Vavuniya",
 ];
+
+function passwordScore(pw) {
+  if (!pw) return 0;
+  return (
+    (pw.length >= 6 ? 1 : 0) +
+    (pw.length >= 10 ? 1 : 0) +
+    (/[A-Z]/.test(pw) && /[a-z]/.test(pw) ? 1 : 0) +
+    (/\d|[^A-Za-z0-9]/.test(pw) ? 1 : 0)
+  );
+}
 
 /* ─────────────────────────────────────────────────────────────────
    Scoped CSS animations — register page only
@@ -160,6 +173,12 @@ const REGISTER_STYLES = `
   .reg-form-scroll::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
   }
+  .reg-field:focus-within { border-color: #10b981; box-shadow: 0 0 0 4px rgba(16,185,129,0.12); background: #fff; }
+  .reg-field:focus-within .reg-field-icon { color: #059669; }
+  .reg-check { appearance: none; width: 16px; height: 16px; border: 1.5px solid #a7f3d0; border-radius: 5px; background: #fff; cursor: pointer; position: relative; flex-shrink: 0; }
+  .reg-check:checked { background: #059669; border-color: #059669; }
+  .reg-check:checked::after { content: ''; position: absolute; left: 4px; top: 1px; width: 5px; height: 9px; border: 2px solid #fff; border-top: 0; border-left: 0; transform: rotate(45deg); }
+  .reg-cta:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(21,128,61,0.38) !important; }
 `;
 
 /* ─────────────────────────────────────────────────────────────────
@@ -225,9 +244,9 @@ function LeafSilhouette({ style, className }) {
 ───────────────────────────────────────────────────────────────── */
 function RegisterHeroPanel() {
   const featureCards = [
-    { Icon: ScanLine,    title: 'AI Crop Scanning',      desc: 'Detect potential crop problems from images.' },
-    { Icon: Leaf,        title: 'Crop Health Insights',   desc: 'Understand plant health with AI-powered analysis.' },
-    { Icon: ShieldCheck, title: 'Smart Recommendations',  desc: 'Get practical guidance for healthier crops.' },
+    { Icon: ScanIcon,        title: 'AI Crop Scanning',      desc: 'Detect potential crop problems from images.' },
+    { Icon: LeafIcon,        title: 'Crop Health Insights',   desc: 'Understand plant health with AI-powered analysis.' },
+    { Icon: ShieldCheckIcon, title: 'Smart Recommendations',  desc: 'Get practical guidance for healthier crops.' },
   ];
 
   return (
@@ -279,7 +298,7 @@ function RegisterHeroPanel() {
         {/* ── Upper Branding Badge & Text ── */}
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-400/15 border border-emerald-400/25 mb-3">
-            <Sparkles size={13} className="text-emerald-300" />
+            <StarIcon size={13} className="text-emerald-300" />
             <span className="text-emerald-300 text-[11px] font-semibold tracking-widest uppercase">
               AI-Powered Agriculture
             </span>
@@ -375,7 +394,7 @@ function RegisterHeroPanel() {
             }}
           >
             <div className="w-6 h-6 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-300">
-              <Sprout size={13} />
+              <SproutIcon size={13} />
             </div>
             <div>
               <div className="text-[10px] text-emerald-300/80 font-medium">Healthy Growth</div>
@@ -396,7 +415,7 @@ function RegisterHeroPanel() {
             }}
           >
             <div className="w-6 h-6 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-300">
-              <ShieldCheck size={13} />
+              <ShieldCheckIcon size={13} />
             </div>
             <div>
               <div className="text-[10px] text-emerald-300/80 font-medium">Disease Detection</div>
@@ -414,7 +433,7 @@ function RegisterHeroPanel() {
             }}
           >
             <div className="w-6 h-6 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-300">
-              <Droplets size={13} />
+              <DropletIcon size={13} />
             </div>
             <div>
               <div className="text-[10px] text-emerald-300/80 font-medium">Soil Health</div>
@@ -432,7 +451,7 @@ function RegisterHeroPanel() {
             }}
           >
             <div className="w-6 h-6 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-300">
-              <Activity size={13} />
+              <ActivityIcon size={13} />
             </div>
             <div>
               <div className="text-[10px] text-emerald-300/80 font-medium">Nutrient Level</div>
@@ -713,9 +732,9 @@ export default function Register() {
       <div className="flex min-h-screen items-center justify-center bg-[#f0faf2]">
         <div className="flex flex-col items-center gap-3">
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white border border-emerald-100 shadow-sm text-emerald-600">
-            <RiLeafLine size={28} />
+            <LeafIcon size={28} />
           </div>
-          <Loader2 className="h-6 w-6 animate-spin text-emerald-600" />
+          <LoaderIcon className="h-6 w-6 animate-spin text-emerald-600" />
           <p className="text-sm font-medium text-emerald-800">
             Setting up your AgroGuard account...
           </p>
@@ -737,7 +756,7 @@ export default function Register() {
 
           {/* Success Icon */}
           <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 shadow-sm">
-            <CheckCircle2 className="h-9 w-9" />
+            <CheckCircleIcon className="h-9 w-9" />
           </div>
 
           <h1 className="text-2xl font-bold text-gray-900">
@@ -752,7 +771,7 @@ export default function Register() {
           <div className="mt-6 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 p-px shadow-sm">
             <div className="rounded-2xl bg-white px-6 py-5">
               <div className="mb-1 flex items-center justify-center gap-2">
-                <Sprout className="h-4 w-4 text-emerald-600" />
+                <SproutIcon className="h-4 w-4 text-emerald-600" />
                 <span className="text-xs font-semibold uppercase tracking-widest text-emerald-700">
                   {isExpert ? 'Your Expert ID' : 'Your Farmer ID'}
                 </span>
@@ -769,7 +788,7 @@ export default function Register() {
           {/* Next steps */}
           <div className="mt-5 rounded-2xl bg-emerald-50/60 border border-emerald-100 p-4 text-left">
             <div className="flex gap-3">
-              <Tractor className="mt-0.5 h-5 w-5 flex-shrink-0 text-emerald-600" />
+              <TractorIcon className="mt-0.5 h-5 w-5 flex-shrink-0 text-emerald-600" />
               <div>
                 <p className="text-sm font-semibold text-gray-800">
                   Your next step
@@ -793,7 +812,7 @@ export default function Register() {
             }}
           >
             Go to {isExpert ? 'Expert Portal' : 'Farmer Dashboard'}
-            <ArrowRight className="h-4 w-4" />
+            <ArrowRightIcon className="h-4 w-4" />
           </button>
         </div>
       </div>
@@ -826,7 +845,7 @@ export default function Register() {
             <div className="mb-6">
               <Link to="/" className="inline-flex items-center gap-2.5 mb-3 group">
                 <div className="w-10 h-10 rounded-xl bg-white border border-emerald-200 flex items-center justify-center text-emerald-600 shadow-sm transition-transform group-hover:scale-105">
-                  <RiLeafLine size={22} />
+                  <LeafIcon size={22} />
                 </div>
                 <div>
                   <span className="text-xl font-black tracking-tight text-gray-900 block leading-tight">
@@ -865,11 +884,11 @@ export default function Register() {
                   <div
                     className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${
                       selectedRole === "farmer"
-                        ? "bg-emerald-100 text-emerald-700"
-                        : "bg-gray-100 text-gray-500"
+                        ? "bg-emerald-600 text-white"
+                        : "bg-emerald-50 text-emerald-600"
                     }`}
                   >
-                    <Sprout size={18} />
+                    <SproutIcon size={18} />
                   </div>
                   <div className="min-w-0">
                     <div className="text-xs font-bold text-gray-900">Farmer</div>
@@ -890,11 +909,11 @@ export default function Register() {
                   <div
                     className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${
                       selectedRole === "expert"
-                        ? "bg-emerald-100 text-emerald-700"
-                        : "bg-gray-100 text-gray-500"
+                        ? "bg-emerald-600 text-white"
+                        : "bg-emerald-50 text-emerald-600"
                     }`}
                   >
-                    <ClipboardList size={18} />
+                    <ClipboardIcon size={18} />
                   </div>
                   <div className="min-w-0">
                     <div className="text-xs font-bold text-gray-900">Agricultural Expert</div>
@@ -915,7 +934,7 @@ export default function Register() {
                   />
                 ) : (
                   <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-600 text-white">
-                    <User size={16} />
+                    <UserIcon size={16} />
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
@@ -925,7 +944,7 @@ export default function Register() {
                   <p className="text-[11px] text-emerald-700 truncate">{googleUser.email}</p>
                 </div>
                 <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100">
-                  <CheckCircle2 size={12} className="text-emerald-600" />
+                  <CheckCircleIcon size={12} className="text-emerald-600" />
                   Verified
                 </span>
               </div>
@@ -935,26 +954,9 @@ export default function Register() {
                   type="button"
                   onClick={handleGoogleSignUp}
                   disabled={submitting}
-                  className="w-full py-2.5 px-4 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 rounded-xl text-xs font-semibold text-gray-700 shadow-xs flex items-center justify-center gap-2.5 transition-all"
+                  className="w-full py-2.5 px-4 bg-white border border-emerald-100 hover:border-emerald-300 hover:bg-emerald-50/50 rounded-xl text-xs font-semibold text-gray-700 shadow-xs flex items-center justify-center gap-2.5 transition-all"
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24">
-                    <path
-                      fill="#4285F4"
-                      d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
-                    />
-                    <path
-                      fill="#34A853"
-                      d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.35 24 12 24z"
-                    />
-                    <path
-                      fill="#FBBC05"
-                      d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.98 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
-                    />
-                    <path
-                      fill="#EA4335"
-                      d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.35 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
-                    />
-                  </svg>
+                  <GoogleMark size={18} />
                   <span>Continue with Google</span>
                 </button>
 
@@ -979,43 +981,50 @@ export default function Register() {
                 </label>
                 <div className="grid grid-cols-12 gap-2">
                   <div className="col-span-3 sm:col-span-3">
-                    <select
-                      name="title"
-                      value={formData.title}
-                      onChange={updateForm}
-                      className="w-full py-2.5 px-2 bg-white rounded-xl border border-gray-200 text-xs text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                    >
-                      <option>Mr</option>
-                      <option>Mrs</option>
-                      <option>Ms</option>
-                      <option>Dr</option>
-                      <option>Prof</option>
-                    </select>
-                  </div>
-                  <div className="col-span-4 sm:col-span-4 relative">
-                    <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-gray-400">
-                      <User size={14} />
+                    <div className="reg-field relative rounded-xl border border-emerald-100 bg-emerald-50/40">
+                      <select
+                        name="title"
+                        value={formData.title}
+                        onChange={updateForm}
+                        className="w-full py-2.5 px-2 bg-transparent rounded-xl text-xs text-gray-800 font-medium focus:outline-none appearance-none"
+                      >
+                        <option>Mr</option>
+                        <option>Mrs</option>
+                        <option>Ms</option>
+                        <option>Dr</option>
+                        <option>Prof</option>
+                      </select>
+                      <ChevronDownIcon size={14} className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-emerald-600" />
                     </div>
-                    <input
-                      type="text"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={updateForm}
-                      required
-                      placeholder="First name"
-                      className="w-full pl-8 pr-2.5 py-2.5 bg-white rounded-xl border border-gray-200 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                    />
                   </div>
-                  <div className="col-span-5 sm:col-span-5 relative">
-                    <input
-                      type="text"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={updateForm}
-                      required
-                      placeholder="Last name"
-                      className="w-full px-3 py-2.5 bg-white rounded-xl border border-gray-200 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                    />
+                  <div className="col-span-4 sm:col-span-4">
+                    <div className="reg-field relative rounded-xl border border-emerald-100 bg-emerald-50/40">
+                      <div className="reg-field-icon absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-emerald-500">
+                        <UserIcon size={14} />
+                      </div>
+                      <input
+                        type="text"
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={updateForm}
+                        required
+                        placeholder="First name"
+                        className="w-full pl-8 pr-2.5 py-2.5 bg-transparent rounded-xl text-xs text-gray-900 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-span-5 sm:col-span-5">
+                    <div className="reg-field relative rounded-xl border border-emerald-100 bg-emerald-50/40">
+                      <input
+                        type="text"
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={updateForm}
+                        required
+                        placeholder="Last name"
+                        className="w-full px-3 py-2.5 bg-transparent rounded-xl text-xs text-gray-900 focus:outline-none"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1025,9 +1034,9 @@ export default function Register() {
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
                   Email Address <span className="text-emerald-600">*</span>
                 </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                    <Mail size={15} />
+                <div className="reg-field relative rounded-xl border border-emerald-100 bg-emerald-50/40">
+                  <div className="reg-field-icon absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-emerald-500">
+                    <MailIcon size={15} />
                   </div>
                   <input
                     type="email"
@@ -1037,21 +1046,20 @@ export default function Register() {
                     }
                     required
                     placeholder="name@agroguard.lk"
-                    className="w-full pl-9 pr-3 py-2.5 bg-white rounded-xl border border-gray-200 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="w-full pl-9 pr-3 py-2.5 bg-transparent rounded-xl text-xs text-gray-900 focus:outline-none"
                   />
                 </div>
               </div>
 
               {/* Phone & Nationality */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {/* Phone */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1">
                     Phone Number <span className="text-emerald-600">*</span>
                   </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                      <Phone size={14} />
+                  <div className="reg-field relative rounded-xl border border-emerald-100 bg-emerald-50/40">
+                    <div className="reg-field-icon absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-emerald-500">
+                      <PhoneIcon size={14} />
                     </div>
                     <input
                       type="tel"
@@ -1060,25 +1068,24 @@ export default function Register() {
                       onChange={updateForm}
                       required
                       placeholder="07X XXXXXXX"
-                      className="w-full pl-9 pr-3 py-2.5 bg-white rounded-xl border border-gray-200 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                      className="w-full pl-9 pr-3 py-2.5 bg-transparent rounded-xl text-xs text-gray-900 focus:outline-none"
                     />
                   </div>
                 </div>
 
-                {/* Nationality */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1">
                     Nationality
                   </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                      <Globe size={14} />
+                  <div className="reg-field relative rounded-xl border border-emerald-100 bg-emerald-50/40">
+                    <div className="reg-field-icon absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-emerald-500">
+                      <GlobeIcon size={14} />
                     </div>
                     <select
                       name="nationality"
                       value={formData.nationality}
                       onChange={updateForm}
-                      className="w-full pl-9 pr-7 py-2.5 bg-white rounded-xl border border-gray-200 text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 appearance-none"
+                      className="w-full pl-9 pr-8 py-2.5 bg-transparent rounded-xl text-xs text-gray-800 focus:outline-none appearance-none"
                     >
                       {COUNTRIES.map((c) => (
                         <option key={c} value={c}>
@@ -1086,30 +1093,27 @@ export default function Register() {
                         </option>
                       ))}
                     </select>
-                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
-                      ▾
-                    </span>
+                    <ChevronDownIcon size={14} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-emerald-600" />
                   </div>
                 </div>
               </div>
 
               {/* Farm Name (if farmer) & District */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {/* District */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1">
                     Location / District <span className="text-emerald-600">*</span>
                   </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                      <MapPin size={14} />
+                  <div className="reg-field relative rounded-xl border border-emerald-100 bg-emerald-50/40">
+                    <div className="reg-field-icon absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-emerald-500">
+                      <MapPinIcon size={14} />
                     </div>
                     <select
                       name="district"
                       value={formData.district}
                       onChange={updateForm}
                       required
-                      className="w-full pl-9 pr-7 py-2.5 bg-white rounded-xl border border-gray-200 text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 appearance-none"
+                      className="w-full pl-9 pr-8 py-2.5 bg-transparent rounded-xl text-xs text-gray-800 focus:outline-none appearance-none"
                     >
                       <option value="">Select District</option>
                       {DISTRICTS.map((d) => (
@@ -1118,21 +1122,18 @@ export default function Register() {
                         </option>
                       ))}
                     </select>
-                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
-                      ▾
-                    </span>
+                    <ChevronDownIcon size={14} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-emerald-600" />
                   </div>
                 </div>
 
-                {/* Farm Name / Affiliation */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1">
                     {selectedRole === 'farmer' ? 'Farm Name' : 'Institute / Organization'}
                     <span className="text-gray-400 font-normal ml-1">(Optional)</span>
                   </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                      {selectedRole === 'farmer' ? <Sprout size={14} /> : <Tractor size={14} />}
+                  <div className="reg-field relative rounded-xl border border-emerald-100 bg-emerald-50/40">
+                    <div className="reg-field-icon absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-emerald-500">
+                      {selectedRole === 'farmer' ? <SproutIcon size={14} /> : <BuildingIcon size={14} />}
                     </div>
                     <input
                       type="text"
@@ -1140,7 +1141,7 @@ export default function Register() {
                       value={formData.farmName}
                       onChange={updateForm}
                       placeholder={selectedRole === 'farmer' ? 'e.g. Green Valley Farm' : 'e.g. Dept of Agriculture'}
-                      className="w-full pl-9 pr-3 py-2.5 bg-white rounded-xl border border-gray-200 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                      className="w-full pl-9 pr-3 py-2.5 bg-transparent rounded-xl text-xs text-gray-900 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -1148,56 +1149,75 @@ export default function Register() {
 
               {/* Password Fields */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {/* Password */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1">
                     Password
                   </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                      <Lock size={14} />
+                  <div className="reg-field relative rounded-xl border border-emerald-100 bg-emerald-50/40">
+                    <div className="reg-field-icon absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-emerald-500">
+                      <LockIcon size={14} />
                     </div>
                     <input
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full pl-9 pr-8 py-2.5 bg-white rounded-xl border border-gray-200 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                      className="w-full pl-9 pr-8 py-2.5 bg-transparent rounded-xl text-xs text-gray-900 focus:outline-none"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-gray-400 hover:text-gray-600"
+                      className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-emerald-500 hover:text-emerald-700"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
                     >
-                      {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                      {showPassword ? <EyeOffIcon size={14} /> : <EyeIcon size={14} />}
                     </button>
                   </div>
+                  {password ? (
+                    <div className="mt-1.5 flex items-center gap-2">
+                      <div className="flex-1 h-1 rounded-full bg-emerald-100 overflow-hidden flex gap-0.5">
+                        {[1, 2, 3, 4].map((n) => (
+                          <div
+                            key={n}
+                            className={`h-full flex-1 rounded-full transition-colors ${
+                              n <= passwordScore(password) ? "bg-emerald-500" : "bg-transparent"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
 
-                {/* Confirm Password */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1">
                     Confirm Password
                   </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                      <Lock size={14} />
+                  <div className="reg-field relative rounded-xl border border-emerald-100 bg-emerald-50/40">
+                    <div className="reg-field-icon absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-emerald-500">
+                      <LockIcon size={14} />
                     </div>
                     <input
                       type={showConfirmPassword ? "text" : "password"}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full pl-9 pr-8 py-2.5 bg-white rounded-xl border border-gray-200 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                      className="w-full pl-9 pr-8 py-2.5 bg-transparent rounded-xl text-xs text-gray-900 focus:outline-none"
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-gray-400 hover:text-gray-600"
+                      className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-emerald-500 hover:text-emerald-700"
+                      aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                     >
-                      {showConfirmPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                      {showConfirmPassword ? <EyeOffIcon size={14} /> : <EyeIcon size={14} />}
                     </button>
                   </div>
+                  {confirmPassword && password !== confirmPassword ? (
+                    <p className="mt-1.5 text-[11px] text-red-600 flex items-center gap-1">
+                      <AlertIcon size={12} /> Passwords do not match
+                    </p>
+                  ) : null}
                 </div>
               </div>
 
@@ -1208,7 +1228,7 @@ export default function Register() {
                   checked={agreed}
                   onChange={(e) => setAgreed(e.target.checked)}
                   required
-                  className="mt-0.5 h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 accent-emerald-600"
+                  className="reg-check mt-0.5"
                 />
                 <span className="text-xs text-gray-500 leading-tight">
                   I agree to the{" "}
@@ -1225,7 +1245,7 @@ export default function Register() {
 
               {/* Security Trust Note */}
               <div className="flex items-start gap-2.5 p-3 rounded-xl bg-emerald-50/70 border border-emerald-100/80">
-                <ShieldCheck size={16} className="text-emerald-700 mt-0.5 flex-shrink-0" />
+                <ShieldCheckIcon size={16} className="text-emerald-700 mt-0.5 flex-shrink-0" />
                 <p className="text-[11px] text-emerald-800 leading-relaxed">
                   Your data is protected by enterprise-grade 256-bit encryption. AgroGuard-AI strictly maintains agricultural surveillance privacy.
                 </p>
@@ -1235,7 +1255,7 @@ export default function Register() {
               <button
                 type="submit"
                 disabled={submitting || !agreed}
-                className="w-full py-3 px-4 text-white rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 hover:shadow-lg"
+                className="reg-cta w-full py-3 px-4 text-white rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{
                   background: 'linear-gradient(135deg, #15803d, #166534)',
                   boxShadow: '0 4px 18px rgba(21,128,61,0.28)',
@@ -1243,13 +1263,13 @@ export default function Register() {
               >
                 {submitting ? (
                   <>
-                    <Loader2 size={16} className="animate-spin" />
+                    <LoaderIcon size={16} className="animate-spin" />
                     <span>Creating Account...</span>
                   </>
                 ) : (
                   <>
                     <span>Create Account</span>
-                    <ArrowRight size={16} />
+                    <ArrowRightIcon size={16} />
                   </>
                 )}
               </button>

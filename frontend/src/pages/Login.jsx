@@ -1,10 +1,25 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { RiLeafLine } from 'react-icons/ri';
-import { FiArrowRight, FiLock, FiMail, FiCheckCircle } from 'react-icons/fi';
-import { ScanLine, Leaf, ShieldCheck, Sparkles } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import PublicNav from '../components/home/PublicNav';
+import {
+  LeafIcon,
+  ScanIcon,
+  ShieldCheckIcon,
+  StarIcon,
+  WheatIcon,
+  ClipboardIcon,
+  FlaskIcon,
+  SettingsIcon,
+  MailIcon,
+  LockIcon,
+  CheckCircleIcon,
+  AlertIcon,
+  ArrowRightIcon,
+  EyeIcon,
+  EyeOffIcon,
+  LoaderIcon,
+} from '../components/auth/AuthIcons';
 
 /* ─────────────────────────────────────────────────────────────────
    Scoped CSS animations — login page only
@@ -77,6 +92,13 @@ const LOGIN_STYLES = `
   .lp-card-in { animation: lp-card-fade 0.6s ease backwards; }
   .lp-hero-panel { display: flex; flex-direction: column; }
   @media (max-width: 767px) { .lp-hero-panel { display: none; } }
+  .lp-field:focus-within { border-color: #10b981; box-shadow: 0 0 0 4px rgba(16,185,129,0.12); background: #fff; }
+  .lp-field:focus-within .lp-field-icon { color: #059669; }
+  .lp-check { appearance: none; width: 16px; height: 16px; border: 1.5px solid #a7f3d0; border-radius: 5px; background: #fff; cursor: pointer; position: relative; }
+  .lp-check:checked { background: #059669; border-color: #059669; }
+  .lp-check:checked::after { content: ''; position: absolute; left: 4px; top: 1px; width: 5px; height: 9px; border: 2px solid #fff; border-top: 0; border-left: 0; transform: rotate(45deg); }
+  .lp-cta:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(21,128,61,0.38) !important; }
+  .lp-cta:active:not(:disabled) { transform: translateY(0); }
 `;
 
 /* ─────────────────────────────────────────────────────────────────
@@ -143,9 +165,9 @@ function LeafSilhouette({ style, className }) {
 ───────────────────────────────────────────────────────────────── */
 function HeroPanel() {
   const featureCards = [
-    { Icon: ScanLine,    title: 'AI Crop Scanning',        desc: 'Detect potential crop problems from images.' },
-    { Icon: Leaf,        title: 'Crop Health Insights',     desc: 'Understand plant health with AI-powered analysis.' },
-    { Icon: ShieldCheck, title: 'Smart Recommendations',    desc: 'Get practical guidance for healthier crops.' },
+    { Icon: ScanIcon,         title: 'AI Crop Scanning',        desc: 'Detect potential crop problems from images.' },
+    { Icon: LeafIcon,         title: 'Crop Health Insights',     desc: 'Understand plant health with AI-powered analysis.' },
+    { Icon: ShieldCheckIcon,  title: 'Smart Recommendations',    desc: 'Get practical guidance for healthier crops.' },
   ];
 
   return (
@@ -216,7 +238,7 @@ function HeroPanel() {
         {/* ── Top branding ── */}
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-400/15 border border-emerald-400/25 mb-4">
-            <Sparkles size={13} className="text-emerald-300" />
+            <StarIcon size={13} className="text-emerald-300" />
             <span className="text-emerald-300 text-[11px] font-semibold tracking-widest uppercase">
               AI-Powered Agriculture
             </span>
@@ -311,8 +333,8 @@ function HeroPanel() {
                 animationDelay: `${i * 0.12 + 0.2}s`,
               }}
             >
-              <div className="w-7 h-7 rounded-lg bg-emerald-400/20 flex items-center justify-center mb-2">
-                <Icon size={14} className="text-emerald-300" />
+              <div className="w-7 h-7 rounded-lg bg-emerald-400/20 flex items-center justify-center mb-2 text-emerald-300">
+                <Icon size={14} />
               </div>
               <p className="text-white text-[11px] font-semibold leading-tight mb-1">{title}</p>
               <p className="text-white/50 text-[10px] leading-relaxed">{desc}</p>
@@ -346,6 +368,7 @@ export default function Login() {
   const [password, setPassword] = useState('password123');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const roleCredentials = {
     farmer:   { email: 'ruwan@farm.lk',          name: 'Ruwan Perera',        title: 'Paddy Farmer (Ampara)'    },
@@ -400,59 +423,66 @@ export default function Login() {
           <div className="relative z-10 w-full max-w-md">
             {/* Card */}
             <div
-              className="bg-white rounded-3xl p-8"
+              className="bg-white/90 backdrop-blur-xl rounded-3xl p-8"
               style={{ border: '1px solid #d1fae5', boxShadow: '0 8px 48px rgba(20,83,45,0.10)' }}
             >
               {/* Header */}
               <div className="mb-7 text-center">
                 <div className="flex items-center justify-center gap-2.5 mb-5">
                   <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center text-emerald-600"
-                    style={{ background: '#fff', border: '1px solid #a7f3d0', boxShadow: '0 2px 8px rgba(20,83,45,0.08)' }}
+                    className="w-11 h-11 rounded-2xl flex items-center justify-center text-emerald-600"
+                    style={{ background: 'linear-gradient(180deg,#ecfdf5,#fff)', border: '1px solid #a7f3d0', boxShadow: '0 2px 8px rgba(20,83,45,0.08)' }}
                   >
-                    <RiLeafLine size={22} />
+                    <LeafIcon size={22} />
                   </div>
                   <span className="text-xl font-black tracking-tight text-gray-900">
                     AgroGuard <span className="text-emerald-600">AI</span>
                   </span>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">Sign in to Portal</h2>
+                <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Welcome back</h2>
                 <p className="text-xs text-gray-500 mt-1.5">
-                  Select your stakeholder profile to explore the system
+                  Choose a demo profile and sign in to explore the portal
                 </p>
               </div>
 
               {/* Role selector */}
               <div className="mb-6">
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-semibold text-emerald-800/70 uppercase tracking-wider mb-2">
                   Select Demo Role
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
-                    { id: 'farmer',   label: 'Farmer',      icon: '🌾' },
-                    { id: 'officer',  label: 'Agri Officer', icon: '📋' },
-                    { id: 'research', label: 'Researcher',   icon: '🔬' },
-                    { id: 'admin',    label: 'Admin',        icon: '⚙️' },
-                  ].map((item) => (
-                    <button
-                      type="button"
-                      key={item.id}
-                      onClick={() => handleRoleSelect(item.id)}
-                      className={`flex items-center gap-2 p-2.5 rounded-xl border text-xs font-semibold transition-all ${
-                        role === item.id
-                          ? 'bg-emerald-50 border-emerald-500 text-emerald-800 shadow-sm ring-1 ring-emerald-400'
-                          : 'border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'
-                      }`}
-                    >
-                      <span className="text-base">{item.icon}</span>
-                      <div className="text-left leading-tight">
-                        <div>{item.label}</div>
-                      </div>
-                    </button>
-                  ))}
+                    { id: 'farmer',   label: 'Farmer',       Icon: WheatIcon },
+                    { id: 'officer',  label: 'Agri Officer', Icon: ClipboardIcon },
+                    { id: 'research', label: 'Researcher',   Icon: FlaskIcon },
+                    { id: 'admin',    label: 'Admin',        Icon: SettingsIcon },
+                  ].map((item) => {
+                    const active = role === item.id;
+                    return (
+                      <button
+                        type="button"
+                        key={item.id}
+                        onClick={() => handleRoleSelect(item.id)}
+                        className={`flex items-center gap-2 p-2.5 rounded-xl border text-xs font-semibold transition-all ${
+                          active
+                            ? 'bg-emerald-50 border-emerald-500 text-emerald-800 shadow-sm ring-1 ring-emerald-400'
+                            : 'border-emerald-100 text-gray-600 hover:bg-emerald-50/60 hover:border-emerald-200'
+                        }`}
+                      >
+                        <span
+                          className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                            active ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-600'
+                          }`}
+                        >
+                          <item.Icon size={15} />
+                        </span>
+                        <span className="text-left leading-tight">{item.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
                 <div className="mt-2 text-[11px] text-emerald-700 bg-emerald-50 p-2 rounded-lg flex items-center gap-1.5 border border-emerald-100">
-                  <FiCheckCircle size={13} className="text-emerald-600 flex-shrink-0" />
+                  <CheckCircleIcon size={13} className="text-emerald-600 flex-shrink-0" />
                   <span>
                     Acting as: <strong>{roleCredentials[role].name}</strong> ({roleCredentials[role].title})
                   </span>
@@ -461,8 +491,9 @@ export default function Login() {
 
               {/* Error */}
               {errorMsg && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-center gap-2">
-                  <span className="font-semibold">Error:</span> {errorMsg}
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-start gap-2">
+                  <AlertIcon size={14} className="text-red-500 mt-0.5 flex-shrink-0" />
+                  <span>{errorMsg}</span>
                 </div>
               )}
 
@@ -471,16 +502,16 @@ export default function Login() {
                 {/* Email */}
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Email Address</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                      <FiMail size={15} />
+                  <div className="lp-field relative flex items-center rounded-xl border border-emerald-100 bg-emerald-50/40 transition-all">
+                    <div className="lp-field-icon absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-emerald-500">
+                      <MailIcon size={15} />
                     </div>
                     <input
                       type="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition-all"
+                      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-transparent text-sm focus:outline-none"
                       placeholder="name@organization.lk"
                     />
                   </div>
@@ -493,41 +524,42 @@ export default function Login() {
                     <a
                       href="#forgot"
                       onClick={(e) => e.preventDefault()}
-                      className="text-xs text-emerald-600 hover:underline"
+                      className="text-xs text-emerald-600 hover:underline font-medium"
                     >
                       Forgot?
                     </a>
                   </div>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                      <FiLock size={15} />
+                  <div className="lp-field relative flex items-center rounded-xl border border-emerald-100 bg-emerald-50/40 transition-all">
+                    <div className="lp-field-icon absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-emerald-500">
+                      <LockIcon size={15} />
                     </div>
                     <input
-                      type="password"
+                      type={showPassword ? 'text' : 'password'}
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition-all"
+                      className="w-full pl-9 pr-10 py-2.5 rounded-xl bg-transparent text-sm focus:outline-none"
                       placeholder="••••••••"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-emerald-500 hover:text-emerald-700"
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? <EyeOffIcon size={15} /> : <EyeIcon size={15} />}
+                    </button>
                   </div>
                 </div>
 
                 {/* Keep signed in + SSL */}
                 <div className="flex items-center justify-between text-xs text-gray-600">
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      defaultChecked
-                      className="rounded text-emerald-600 focus:ring-emerald-500"
-                    />
+                    <input type="checkbox" defaultChecked className="lp-check" />
                     <span>Keep me signed in</span>
                   </label>
-                  <span className="flex items-center gap-1 text-emerald-700 font-medium">
-                    <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
-                      <rect x="1" y="5" width="8" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.2" />
-                      <path d="M3 5V3.5a2 2 0 014 0V5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-                    </svg>
+                  <span className="flex items-center gap-1.5 text-emerald-700 font-medium">
+                    <LockIcon size={12} className="text-emerald-600" />
                     SSL Encrypted
                   </span>
                 </div>
@@ -536,25 +568,32 @@ export default function Login() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 px-4 text-white rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="lp-cta w-full py-3 px-4 text-white rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                   style={{
                     background: 'linear-gradient(135deg, #15803d, #166534)',
                     boxShadow: '0 4px 20px rgba(21,128,61,0.30)',
                   }}
                 >
                   {loading ? (
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <LoaderIcon size={18} className="animate-spin text-white" />
                   ) : (
                     <>
                       <span>Enter Dashboard</span>
-                      <FiArrowRight size={16} />
+                      <ArrowRightIcon size={16} />
                     </>
                   )}
                 </button>
               </form>
 
+              <p className="mt-5 text-center text-xs text-gray-500">
+                New to AgroGuard?{' '}
+                <Link to="/register" className="font-bold text-emerald-700 hover:underline">
+                  Create an account
+                </Link>
+              </p>
+
               {/* Footer */}
-              <div className="mt-6 pt-4 border-t border-gray-100 text-center text-[11px] text-gray-400">
+              <div className="mt-5 pt-4 border-t border-emerald-50 text-center text-[11px] text-gray-400">
                 AgroGuard AI Sri Lanka • Multi-Role Agri-Tech Surveillance
               </div>
             </div>

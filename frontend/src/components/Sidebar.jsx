@@ -31,9 +31,9 @@ const navConfig = {
 
 const roleColors = {
   farmer: 'from-green-800 to-green-900',
-  officer: 'from-blue-800 to-blue-900',
-  research: 'from-purple-800 to-purple-900',
-  admin: 'from-gray-800 to-gray-900',
+  officer: 'from-green-800 to-green-900',
+  research: 'from-green-800 to-green-900',
+  admin: 'from-green-800 to-green-900',
 };
 
 const roleLabels = {

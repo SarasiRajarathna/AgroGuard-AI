@@ -1,6 +1,18 @@
 import { RiLeafLine } from 'react-icons/ri';
+import { useLanguage } from '../context/LanguageContext';
 
-export default function Loading({ fullPage = false, message = 'Analyzing agricultural data...' }) {
+export default function Loading({ fullPage = false, message }) {
+  let t = (k) => k;
+  try {
+    const lang = useLanguage();
+    if (lang && lang.t) t = lang.t;
+  } catch {
+    // fallback
+  }
+
+  const displayMessage = message || t('analyzingData');
+  const subMessage = t('modelsRunning');
+
   if (fullPage) {
     return (
       <div className="fixed inset-0 bg-white/80 backdrop-blur-xs z-50 flex flex-col items-center justify-center p-4">
@@ -10,8 +22,8 @@ export default function Loading({ fullPage = false, message = 'Analyzing agricul
             <RiLeafLine size={24} />
           </div>
         </div>
-        <p className="text-gray-700 font-medium text-sm animate-pulse">{message}</p>
-        <p className="text-gray-400 text-xs mt-1">AgroGuard AI neural models running</p>
+        <p className="text-gray-700 font-medium text-sm animate-pulse">{displayMessage}</p>
+        <p className="text-gray-400 text-xs mt-1">{subMessage}</p>
       </div>
     );
   }
@@ -19,7 +31,7 @@ export default function Loading({ fullPage = false, message = 'Analyzing agricul
   return (
     <div className="flex flex-col items-center justify-center p-8 space-y-3">
       <div className="w-10 h-10 rounded-full border-3 border-emerald-100 border-t-emerald-600 animate-spin" />
-      <p className="text-gray-500 text-xs font-medium">{message}</p>
+      <p className="text-gray-500 text-xs font-medium">{displayMessage}</p>
     </div>
   );
 }

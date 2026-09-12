@@ -1,10 +1,19 @@
 import { FiAlertTriangle, FiCloudRain, FiThermometer, FiDroplet, FiRadio } from 'react-icons/fi';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function RiskCard({ riskScore = 75, weatherContext, nearbyAlerts = 0, affectedArea }) {
+  let t = (k) => k;
+  try {
+    const lang = useLanguage();
+    if (lang && lang.t) t = lang.t;
+  } catch {
+    // fallback
+  }
+
   const getRiskLevel = (score) => {
-    if (score >= 75) return { label: 'High Spread Risk', color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200', bar: 'bg-red-500' };
-    if (score >= 45) return { label: 'Moderate Risk', color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-200', bar: 'bg-amber-500' };
-    return { label: 'Low Risk', color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200', bar: 'bg-emerald-500' };
+    if (score >= 75) return { label: t('highSpreadRisk') || 'High Spread Risk', color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200', bar: 'bg-red-500' };
+    if (score >= 45) return { label: t('moderateRisk') || 'Moderate Risk', color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-200', bar: 'bg-amber-500' };
+    return { label: t('lowRisk') || 'Low Risk', color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200', bar: 'bg-emerald-500' };
   };
 
   const level = getRiskLevel(riskScore);
@@ -17,8 +26,8 @@ export default function RiskCard({ riskScore = 75, weatherContext, nearbyAlerts 
             <FiAlertTriangle className={level.color} size={18} />
           </div>
           <div>
-            <h4 className="font-semibold text-gray-900 text-sm">Epidemiological Spread Risk</h4>
-            <p className="text-xs text-gray-500">AI environmental & geospatial calculation</p>
+            <h4 className="font-semibold text-gray-900 text-sm">{t('epidemiologicalSpreadRisk')}</h4>
+            <p className="text-xs text-gray-500">{t('aiGeoCalc')}</p>
           </div>
         </div>
         <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${level.border} bg-white ${level.color}`}>
@@ -29,7 +38,7 @@ export default function RiskCard({ riskScore = 75, weatherContext, nearbyAlerts 
       {/* Progress Bar & Score */}
       <div className="mb-4">
         <div className="flex justify-between items-baseline mb-1">
-          <span className="text-xs font-medium text-gray-700">Calculated Spread Index</span>
+          <span className="text-xs font-medium text-gray-700">{t('calculatedSpreadIndex')}</span>
           <span className="text-xl font-extrabold text-gray-900">{riskScore}<span className="text-xs font-normal text-gray-500">/100</span></span>
         </div>
         <div className="w-full bg-gray-200 h-2.5 rounded-full overflow-hidden">
@@ -45,7 +54,7 @@ export default function RiskCard({ riskScore = 75, weatherContext, nearbyAlerts 
         <div className="bg-white/80 rounded-lg p-2 border border-gray-100">
           <div className="flex items-center justify-center gap-1 text-gray-400 mb-0.5">
             <FiDroplet size={13} className="text-blue-500" />
-            <span className="text-[11px] font-medium text-gray-500">Humidity</span>
+            <span className="text-[11px] font-medium text-gray-500">{t('humidity')}</span>
           </div>
           <span className="text-xs font-bold text-gray-800">
             {weatherContext?.humidity ? `${weatherContext.humidity}%` : '85%'}
@@ -55,7 +64,7 @@ export default function RiskCard({ riskScore = 75, weatherContext, nearbyAlerts 
         <div className="bg-white/80 rounded-lg p-2 border border-gray-100">
           <div className="flex items-center justify-center gap-1 text-gray-400 mb-0.5">
             <FiThermometer size={13} className="text-orange-500" />
-            <span className="text-[11px] font-medium text-gray-500">Temp</span>
+            <span className="text-[11px] font-medium text-gray-500">{t('temp')}</span>
           </div>
           <span className="text-xs font-bold text-gray-800">
             {weatherContext?.temp ? `${weatherContext.temp}°C` : '28°C'}
@@ -65,7 +74,7 @@ export default function RiskCard({ riskScore = 75, weatherContext, nearbyAlerts 
         <div className="bg-white/80 rounded-lg p-2 border border-gray-100">
           <div className="flex items-center justify-center gap-1 text-gray-400 mb-0.5">
             <FiRadio size={13} className="text-purple-500" />
-            <span className="text-[11px] font-medium text-gray-500">Nearby</span>
+            <span className="text-[11px] font-medium text-gray-500">{t('nearby')}</span>
           </div>
           <span className="text-xs font-bold text-gray-800">
             {nearbyAlerts} Farms

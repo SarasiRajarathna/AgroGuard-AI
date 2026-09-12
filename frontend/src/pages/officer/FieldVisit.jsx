@@ -8,9 +8,11 @@ import Modal from '../../components/Modal';
 import Toast from '../../components/Toast';
 import Loading from '../../components/Loading';
 import { visitsAPI } from '../../services/api';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function FieldVisit() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [visits, setVisits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -120,7 +122,7 @@ export default function FieldVisit() {
       )}
 
       <PageHeader
-        title="Agricultural Extension Field Visits"
+        title={t('fieldVisitsTitle')}
         subtitle="Schedule on-site inspections, record verified foliar pathology findings, and update the farmer's case record."
         action={
           <button

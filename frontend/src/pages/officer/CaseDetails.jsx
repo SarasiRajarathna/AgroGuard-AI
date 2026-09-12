@@ -8,10 +8,12 @@ import Toast from '../../components/Toast';
 import Modal from '../../components/Modal';
 import Loading from '../../components/Loading';
 import { casesAPI } from '../../services/api';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function CaseDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const [caseItem, setCaseItem] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -81,15 +83,15 @@ export default function CaseDetails() {
   };
 
   if (loading) {
-    return <Loading fullPage message="Loading case details & AI telemetry..." />;
+    return <Loading fullPage message={t('analyzingData')} />;
   }
 
   if (!caseItem) {
     return (
       <div className="p-8 text-center space-y-3">
-        <p className="text-gray-600 font-semibold">Case record not found.</p>
+        <p className="text-gray-600 font-semibold">{t('noRecordsFound')}</p>
         <button onClick={() => navigate('/officer')} className="px-4 py-2 bg-emerald-700 text-white text-xs rounded-xl font-bold">
-          Return to Dashboard
+          {t('backToDashboard')}
         </button>
       </div>
     );
@@ -111,7 +113,7 @@ export default function CaseDetails() {
         className="flex items-center gap-2 text-xs font-semibold text-gray-500 hover:text-gray-900 transition-colors"
       >
         <FiArrowLeft size={16} />
-        <span>Back to Officer Dashboard</span>
+        <span>{t('backToDashboard')}</span>
       </button>
 
       <PageHeader

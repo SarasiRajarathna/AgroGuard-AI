@@ -8,8 +8,10 @@ import Toast from '../../components/Toast';
 import StatusBadge from '../../components/StatusBadge';
 import Loading from '../../components/Loading';
 import { adminAPI, alertsAPI } from '../../services/api';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function AdminDashboard() {
+  const { t } = useLanguage();
   const [toastMessage, setToastMessage] = useState(null);
   const [broadcastModalOpen, setBroadcastModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -89,15 +91,15 @@ export default function AdminDashboard() {
       )}
 
       <PageHeader
-        title="Operations Control & System Administration"
-        subtitle="Department of Agriculture • Infrastructure, Security, User Directory & Warning Broadcast System"
+        title={t('adminPortalTitle')}
+        subtitle={t('adminSubtitle')}
         action={
           <button
             onClick={() => setBroadcastModalOpen(true)}
             className="flex items-center gap-2 px-4 py-2.5 bg-rose-700 hover:bg-rose-800 text-white rounded-xl text-xs font-semibold shadow-xs transition-all"
           >
             <RiBroadcastLine size={16} />
-            <span>Broadcast Regional Alert</span>
+            <span>{t('broadcastAlertBtn')}</span>
           </button>
         }
       />
@@ -105,7 +107,7 @@ export default function AdminDashboard() {
       {/* KPI Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          title="Registered Farmers"
+          title={t('statTotalUsers')}
           value="1,240"
           icon={FiUsers}
           iconBg="bg-emerald-50 text-emerald-600"
@@ -192,15 +194,15 @@ export default function AdminDashboard() {
       <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
         <div className="p-4 md:p-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="font-bold text-gray-900 text-sm">Authorized Stakeholder Directory</h3>
-            <p className="text-xs text-gray-500">Manage user access across farmers, officers, and researchers</p>
+            <h3 className="font-bold text-gray-900 text-sm">{t('userDirectoryTitle')}</h3>
+            <p className="text-xs text-gray-500">{t('userDirectoryDesc')}</p>
           </div>
 
           <div className="relative max-w-xs w-full">
             <FiSearch className="absolute left-3 top-2.5 text-gray-400" size={15} />
             <input
               type="text"
-              placeholder="Search users..."
+              placeholder={t('searchUsersPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -212,12 +214,12 @@ export default function AdminDashboard() {
           <table className="w-full text-left text-xs text-gray-600">
             <thead className="bg-gray-50 text-gray-500 uppercase font-semibold border-b border-gray-200">
               <tr>
-                <th className="px-5 py-3">User</th>
-                <th className="px-5 py-3">Role</th>
-                <th className="px-5 py-3">Assigned Region</th>
-                <th className="px-5 py-3">Status</th>
+                <th className="px-5 py-3">{t('tableUser')}</th>
+                <th className="px-5 py-3">{t('tableRole')}</th>
+                <th className="px-5 py-3">{t('tableLocation')}</th>
+                <th className="px-5 py-3">{t('tableStatus')}</th>
                 <th className="px-5 py-3">Activity</th>
-                <th className="px-5 py-3 text-right">Action</th>
+                <th className="px-5 py-3 text-right">{t('tableAction')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -229,7 +231,7 @@ export default function AdminDashboard() {
                   </td>
                   <td className="px-5 py-3.5">
                     <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                      {u.role}
+                      {t('role' + u.role?.charAt(0).toUpperCase() + u.role?.slice(1)) || u.role}
                     </span>
                   </td>
                   <td className="px-5 py-3.5 text-gray-700">{u.location}</td>

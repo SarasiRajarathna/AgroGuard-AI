@@ -97,7 +97,7 @@ export default function DiagnosisResult() {
           className="flex items-center gap-2 text-xs font-semibold text-gray-500 hover:text-gray-900 transition-colors"
         >
           <FiArrowLeft size={16} />
-          <span>Back to Farmer Dashboard</span>
+          <span>{t('backToDashboard')}</span>
         </button>
         <div className="flex items-center gap-2">
           <button
@@ -105,14 +105,14 @@ export default function DiagnosisResult() {
             className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-medium text-gray-700 hover:bg-gray-50 shadow-2xs"
           >
             <FiPrinter size={14} />
-            <span className="hidden sm:inline">Print Report</span>
+            <span className="hidden sm:inline">{t('printReport')}</span>
           </button>
           <button
             onClick={() => setToastMessage('Advisory link copied to clipboard for neighboring farmers.')}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-medium text-gray-700 hover:bg-gray-50 shadow-2xs"
           >
             <FiShare2 size={14} />
-            <span className="hidden sm:inline">Share Alert</span>
+            <span className="hidden sm:inline">{t('shareAlert')}</span>
           </button>
         </div>
       </div>
@@ -310,25 +310,25 @@ export default function DiagnosisResult() {
               <span className="text-gray-400 font-normal">#{caseData.id}</span>
             </h4>
             <div className="flex justify-between">
-              <span className="text-gray-500">Crop:</span>
+              <span className="text-gray-500">{t('cropLabel')}:</span>
               <span className="font-medium text-gray-900">{caseData.cropType}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">Cultivar:</span>
+              <span className="text-gray-500">{t('cultivarLabel')}:</span>
               <span className="font-medium text-gray-900">{caseData.variety || 'Bg 352 / Samba'}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">Location:</span>
+              <span className="text-gray-500">{t('locationLabel')}:</span>
               <span className="font-medium text-gray-900">{caseData.location}</span>
             </div>
             {caseData.latitude && caseData.longitude && (
               <div className="flex justify-between">
-                <span className="text-gray-500">GPS Coordinates:</span>
+                <span className="text-gray-500">{t('gpsCoordinates')}:</span>
                 <span className="font-mono text-gray-900">{caseData.latitude}, {caseData.longitude}</span>
               </div>
             )}
             <div className="flex justify-between">
-              <span className="text-gray-500">Plot Extent:</span>
+              <span className="text-gray-500">{t('plotExtent')}:</span>
               <span className="font-medium text-gray-900">{caseData.affectedArea || '1.0 acre'}</span>
             </div>
           </div>

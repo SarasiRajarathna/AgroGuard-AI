@@ -7,8 +7,10 @@ import Toast from '../../components/Toast';
 import Loading from '../../components/Loading';
 import RegionalMap from '../../components/RegionalMap';
 import { outbreaksAPI, adminAPI, casesAPI, farmsAPI } from '../../services/api';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function ResearchDashboard() {
+  const { t } = useLanguage();
   const [toastMessage, setToastMessage] = useState(null);
   const [selectedProvince, setSelectedProvince] = useState('all');
   const [provinces, setProvinces] = useState([]);
@@ -59,7 +61,7 @@ export default function ResearchDashboard() {
     try {
       setConfirmingId(outbreakId);
       const res = await outbreaksAPI.confirm(outbreakId, 10);
-      setToastMessage(res.message || 'Outbreak confirmed and warnings dispatched to nearby farms.');
+      setToastMessage(res.message || t('farmsAlerted'));
 
       // Update local status
       setOutbreaks((prev) =>
@@ -105,15 +107,15 @@ export default function ResearchDashboard() {
       )}
 
       <PageHeader
-        title="Pathogen Surveillance & Epidemiological Analytics"
-        subtitle="Crop Research Institute & National Agriculture Epidemiology Network • Real-time Spore Dynamics"
+        title={t('researchPortalTitle')}
+        subtitle={t('researchSubtitle')}
         action={
           <button
             onClick={handleExport}
             className="flex items-center gap-2 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-semibold shadow-xs transition-all"
           >
             <FiDownload size={16} />
-            <span>Export Surveillance Dataset</span>
+            <span>{t('exportDataset')}</span>
           </button>
         }
       />
@@ -121,7 +123,7 @@ export default function ResearchDashboard() {
       {/* KPI Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          title="Active Outbreak Clusters"
+          title={t('statActiveClusters')}
           value={`${outbreaks.length} Clusters`}
           icon={RiRadarLine}
           iconBg="bg-rose-50 text-rose-600"
@@ -130,7 +132,7 @@ export default function ResearchDashboard() {
           subtitle="Ampara Blast & Nuwara Eliya Blight"
         />
         <StatCard
-          title="Monitored Cases"
+          title={t('statMonitoredCases')}
           value={cases.length.toString()}
           icon={RiPulseLine}
           iconBg="bg-blue-50 text-blue-600"
@@ -139,14 +141,14 @@ export default function ResearchDashboard() {
           subtitle="Ground-truthed foliar reports"
         />
         <StatCard
-          title="Registered Sentinel Farms"
+          title={t('statSentinelFarms')}
           value={farms.length.toString()}
           icon={FiShield}
           iconBg="bg-emerald-50 text-emerald-600"
           subtitle="GPS mapped within radius"
         />
         <StatCard
-          title="Weather Infection Coeff."
+          title={t('statWeatherCoeff')}
           value="r = 0.84"
           icon={FiCloudRain}
           iconBg="bg-purple-50 text-purple-600"
@@ -158,10 +160,8 @@ export default function ResearchDashboard() {
       <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 pb-3">
           <div>
-            <h3 className="font-bold text-gray-900 text-base">Regional Pathogen Surveillance Map</h3>
-            <p className="text-xs text-gray-500">
-              Interactive GPS visualization of crop cases, registered farms, and 10 km epidemiological containment zones
-            </p>
+            <h3 className="font-bold text-gray-900 text-base">{t('surveillanceMapTitle')}</h3>
+            <p className="text-xs text-gray-500">{t('surveillanceMapDesc')}</p>
           </div>
           <span className="text-xs font-mono text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
             Leaflet / OpenStreetMap Live
@@ -182,10 +182,8 @@ export default function ResearchDashboard() {
       <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 pb-3">
           <div>
-            <h3 className="font-bold text-gray-900 text-base">Active Epidemiological Outbreak Clusters</h3>
-            <p className="text-xs text-gray-500">
-              Haversine distance clustering (Radius: 10 km, Min cases: 3). Confirming dispatches instant biosecurity alerts to nearby farms.
-            </p>
+            <h3 className="font-bold text-gray-900 text-base">{t('outbreakClustersTitle')}</h3>
+            <p className="text-xs text-gray-500">{t('outbreakClustersDesc')}</p>
           </div>
         </div>
 
@@ -201,20 +199,20 @@ export default function ResearchDashboard() {
                     CLUSTER #{outbreak.id}
                   </span>
                   <h4 className="font-bold text-gray-900 text-base mt-1">{outbreak.disease}</h4>
-                  <p className="text-xs text-gray-500">Crop: {outbreak.crop} • Region: {outbreak.location}</p>
+                  <p className="text-xs text-gray-500">{t('cropLabel')}: {outbreak.crop} • {t('locationLabel')}: {outbreak.location}</p>
                 </div>
                 <span className={`text-xs px-2.5 py-1 rounded-full font-bold ${
                   outbreak.status === 'confirmed' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800 animate-pulse'
                 }`}>
-                  {outbreak.status === 'confirmed' ? 'Confirmed & Alerted' : 'Active Outbreak'}
+                  {outbreak.status === 'confirmed' ? t('confirmedAndAlerted') : t('activeOutbreakBadge')}
                 </span>
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-xs text-gray-600 bg-white p-3 rounded-lg border border-gray-100">
-                <div><strong>Centroid:</strong> {outbreak.latitude}, {outbreak.longitude}</div>
+                <div><strong>{t('centroid')}:</strong> {outbreak.latitude}, {outbreak.longitude}</div>
                 <div><strong>Radius:</strong> {outbreak.radiusKm || 10} km zone</div>
-                <div><strong>Cluster Cases:</strong> {outbreak.caseCount || outbreak.activeCases || 3} verified</div>
-                <div><strong>Severity:</strong> <span className="text-red-600 font-bold uppercase">{outbreak.severity}</span></div>
+                <div><strong>{t('clusterCases')}:</strong> {outbreak.caseCount || outbreak.activeCases || 3} verified</div>
+                <div><strong>{t('severityLabel')}:</strong> <span className="text-red-600 font-bold uppercase">{outbreak.severity}</span></div>
               </div>
 
               <div className="flex items-center justify-between pt-1">
@@ -228,7 +226,7 @@ export default function ResearchDashboard() {
                     className="flex items-center gap-1.5 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold transition-all shadow-xs"
                   >
                     <FiBell size={13} />
-                    <span>{confirmingId === outbreak.id ? 'Dispatching...' : 'Confirm & Alert Nearby Farms'}</span>
+                    <span>{confirmingId === outbreak.id ? t('dispatching') : t('confirmAndAlert')}</span>
                   </button>
                 )}
               </div>

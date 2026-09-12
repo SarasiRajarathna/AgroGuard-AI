@@ -2,7 +2,6 @@ import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-// Create Centralized Axios Instance
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -11,7 +10,6 @@ const apiClient = axios.create({
   timeout: 30000,
 });
 
-// Request Interceptor: Attach JWT Token
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('agroguard_token');
@@ -23,7 +21,6 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response Interceptor: Handle Global Errors & Formatting
 apiClient.interceptors.response.use(
   (response) => response.data,
   (error) => {
@@ -35,8 +32,6 @@ apiClient.interceptors.response.use(
     return Promise.reject(customError);
   }
 );
-
-// ================= API SERVICE MODULES =================
 
 export const authAPI = {
   login: (email, password) => apiClient.post('/auth/login', { email, password }),
@@ -100,7 +95,6 @@ export const adminAPI = {
   getStats: (role) => apiClient.get('/dashboard/stats', { params: { role } }),
 };
 
-// ================= BACKWARD-COMPATIBLE ADAPTER =================
 export const api = {
   getCases: (params) => casesAPI.getAll(params).then((res) => res.data || res),
   getCaseById: (id) => casesAPI.getById(id).then((res) => res.data || res),

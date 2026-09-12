@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  Phone,
-  User,
-  Sprout,
-  MapPin,
-  CheckCircle2,
-  Globe,
-  Loader2,
-  ArrowRight,
-  Tractor,
-  ShieldCheck,
-} from "lucide-react";
+  FiArrowRight as ArrowRight,
+  FiCheckCircle as CheckCircle2,
+  FiGlobe as Globe,
+  FiLoader as Loader2,
+  FiMapPin as MapPin,
+  FiPhone as Phone,
+  FiUser as User,
+} from "react-icons/fi";
+import { FaTractor as Tractor } from "react-icons/fa";
+import { RiLeafLine as Sprout, RiShieldCheckLine as ShieldCheck } from "react-icons/ri";
 
 import { supabase } from "../lib/supabase";
 

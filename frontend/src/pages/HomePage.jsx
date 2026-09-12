@@ -1,13 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  ScanLine,
-  Radio,
-  Sprout,
-  BarChart3,
-  Users,
-  ShieldCheck,
-} from 'lucide-react';
+import { FiBarChart2 as BarChart3, FiRadio as Radio, FiTarget as ScanLine, FiUsers as Users } from 'react-icons/fi';
+import { RiLeafLine as Sprout, RiShieldCheckLine as ShieldCheck } from 'react-icons/ri';
 import PublicNav from '../components/home/PublicNav';
 import Footer from '../components/home/footer';
 import heroImage from '../assets/agriculture-hero.jpg';

@@ -16,6 +16,7 @@ const notificationsRoutes = require('./routes/notifications.routes');
 const officersRoutes = require('./routes/officers.routes');
 const adminRoutes = require('./routes/admin.routes');
 const dashboardRoutes = require('./routes/dashboard.routes');
+const farmsRoutes = require('./routes/farms.routes');
 
 const app = express();
 
@@ -79,6 +80,7 @@ app.use('/api/notifications', notificationsRoutes);
 app.use('/api/officers', officersRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/farms', farmsRoutes);
 
 // Error Handling Middlewares
 app.use(notFoundHandler);

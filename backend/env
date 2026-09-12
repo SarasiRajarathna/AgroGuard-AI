@@ -1,0 +1,14 @@
+# Server Configuration
+PORT=5000
+NODE_ENV=development
+CLIENT_URL=http://localhost:5173
+
+# JWT Authentication
+JWT_SECRET=agroguard_super_secret_jwt_key_2026_lk_ai_crop_surveillance
+JWT_EXPIRES_IN=7d
+
+# Supabase PostgreSQL Configuration
+# Paste your Supabase project URL and Anon key here:
+SUPABASE_URL=https://onaopjmxxeaojcdrzikv.supabase.co/rest/v1/
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9uYW9wam14eGVhb2pjZHJ6aWt2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkxNzkxMDUsImV4cCI6MjEwNDc1NTEwNX0.t9dr3SDuBjQxEGFQLD4XB0t3SPeJ73_bi2ixnswCUpU
+SUPABASE_SERVICE_ROLE_KEY=

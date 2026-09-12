@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { FiMenu, FiBell, FiChevronDown, FiLogOut, FiUser, FiSettings } from 'react-icons/fi';
 import { RiLeafLine } from 'react-icons/ri';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import { notificationsAPI } from '../services/api';
+import { FiGlobe } from 'react-icons/fi';
 
 const roleTheme = {
   farmer: { label: 'Farmer', bg: 'bg-green-100', text: 'text-green-800', dot: 'bg-green-500' },
@@ -15,8 +17,10 @@ const roleTheme = {
 export default function Navbar({ setIsOpen }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { language, setLanguage, t } = useLanguage();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
@@ -75,12 +79,56 @@ export default function Navbar({ setIsOpen }) {
         </div>
       </div>
 
-      {/* Right: Notifications + User */}
+      {/* Right: Language + Notifications + User */}
       <div className="flex items-center gap-2">
+        {/* Language Selector */}
+        <div className="relative">
+          <button
+            onClick={() => { setLangOpen(!langOpen); setNotifOpen(false); setDropdownOpen(false); }}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-100 text-xs font-semibold transition-colors shadow-xs"
+            title="Switch Language / භාෂාව මාරු කරන්න / மொழியை மாற்றவும்"
+          >
+            <FiGlobe className="text-green-700 text-sm" />
+            <span>{language === 'si' ? 'සිංහල' : language === 'ta' ? 'தமிழ்' : 'English'}</span>
+            <FiChevronDown className="text-gray-400 text-xs" />
+          </button>
+          {langOpen && (
+            <div className="absolute right-0 top-full mt-2 w-36 bg-white rounded-xl shadow-lg border border-gray-200 z-50 py-1 overflow-hidden animate-fade-in-up">
+              <button
+                onClick={() => { setLanguage('en'); setLangOpen(false); }}
+                className={`w-full text-left px-3 py-2 text-xs font-medium transition-colors flex items-center justify-between ${
+                  language === 'en' ? 'bg-green-50 text-green-800 font-bold' : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <span>English</span>
+                {language === 'en' && <span className="w-1.5 h-1.5 rounded-full bg-green-600" />}
+              </button>
+              <button
+                onClick={() => { setLanguage('si'); setLangOpen(false); }}
+                className={`w-full text-left px-3 py-2 text-xs font-medium transition-colors flex items-center justify-between ${
+                  language === 'si' ? 'bg-green-50 text-green-800 font-bold' : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <span>සිංහල (Sinhala)</span>
+                {language === 'si' && <span className="w-1.5 h-1.5 rounded-full bg-green-600" />}
+              </button>
+              <button
+                onClick={() => { setLanguage('ta'); setLangOpen(false); }}
+                className={`w-full text-left px-3 py-2 text-xs font-medium transition-colors flex items-center justify-between ${
+                  language === 'ta' ? 'bg-green-50 text-green-800 font-bold' : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <span>தமிழ் (Tamil)</span>
+                {language === 'ta' && <span className="w-1.5 h-1.5 rounded-full bg-green-600" />}
+              </button>
+            </div>
+          )}
+        </div>
+
         {/* Notifications */}
         <div className="relative">
           <button
-            onClick={() => { setNotifOpen(!notifOpen); setDropdownOpen(false); }}
+            onClick={() => { setNotifOpen(!notifOpen); setDropdownOpen(false); setLangOpen(false); }}
             className="relative p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
             aria-label="Notifications"
           >

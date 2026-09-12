@@ -68,27 +68,53 @@ async function createCase(req, res, next) {
       cropStage,
       symptoms,
       imageUrl,
+      imageBase64,
+      farmId,
+      latitude,
+      longitude,
+      language = 'en',
     } = req.body;
 
     const farmerId = req.user?.id || 1;
     const farmerName = req.user?.name || 'Ruwan Perera';
     const farmerPhone = req.user?.phone || '';
 
+    // If farmId provided and coords missing, auto-fill from farm
+    let lat = latitude;
+    let lng = longitude;
+    let loc = location;
+    if (farmId && (!lat || !lng)) {
+      const farm = await dbService.getFarmById(farmId);
+      if (farm) {
+        lat = farm.latitude;
+        lng = farm.longitude;
+        if (!loc) loc = farm.location;
+      }
+    }
+
     // Execute complete AI Diagnosis & Risk Pipeline
     const diagnosis = await runDiagnosisPipeline({
       cropType,
       variety,
-      location,
+      location: loc,
       fieldArea,
       cropStage,
       symptoms,
       imageUrl,
+      imageBase64,
+      latitude: lat,
+      longitude: lng,
+      language,
     });
 
     const newCase = await dbService.createCase({
       cropType,
       variety,
-      location,
+      location: loc,
+      latitude: lat ? parseFloat(lat) : null,
+      longitude: lng ? parseFloat(lng) : null,
+      farmId: farmId ? Number(farmId) : null,
+      language,
       fieldArea,
       cropStage,
       symptoms,
@@ -164,7 +190,7 @@ async function escalateCase(req, res, next) {
 async function reviewCase(req, res, next) {
   try {
     const { id } = req.params;
-    const { decision, verifiedDisease, officerNotes, scheduleVisit, visitDate } = req.body;
+    const { decision, verifiedDisease, verifiedSeverity, recommendation, officerNotes, scheduleVisit, visitDate } = req.body;
 
     const existing = await dbService.getCaseById(id);
     if (!existing) {
@@ -175,13 +201,19 @@ async function reviewCase(req, res, next) {
     }
 
     const newStatus = decision === 'confirm' || decision === 'modify' ? 'confirmed' : 'rejected';
-    const finalDisease = decision === 'modify' && verifiedDisease ? verifiedDisease : existing.disease;
+    const finalDisease = (decision === 'modify' && verifiedDisease) ? verifiedDisease : (verifiedDisease || existing.disease);
 
     const updated = await dbService.updateCase(id, {
       status: newStatus,
       disease: finalDisease,
       officerId: req.user?.id || 2,
-      officerNotes: officerNotes || existing.officerNotes,
+      officerNotes: officerNotes || recommendation || existing.officerNotes,
+      officerVerified: true,
+      verifiedDisease: finalDisease,
+      verifiedSeverity: verifiedSeverity || existing.severity,
+      verifiedAt: new Date().toISOString(),
+      verifiedBy: req.user?.name || 'Dr. Anura Bandara',
+      officerRecommendation: recommendation || officerNotes || '',
     });
 
     let newVisit = null;
@@ -193,7 +225,7 @@ async function reviewCase(req, res, next) {
         location: existing.location,
         cropType: existing.cropType,
         scheduledDate: visitDate || new Date().toISOString().split('T')[0],
-        notes: officerNotes || 'On-site disease containment inspection',
+        notes: officerNotes || recommendation || 'On-site disease containment inspection',
         officerId: req.user?.id || 2,
       });
     }
@@ -201,7 +233,7 @@ async function reviewCase(req, res, next) {
     // Notify farmer
     await dbService.createNotification({
       userId: existing.farmerId,
-      text: `Your case ${id} has been reviewed by officer ${req.user?.name || 'Dr. Anura Bandara'}. Status: ${newStatus.toUpperCase()}`,
+      text: `Your case #${id} has been reviewed by officer ${req.user?.name || 'Dr. Anura Bandara'}. Verified diagnosis: ${finalDisease}. Status: ${newStatus.toUpperCase()}`,
       type: newStatus === 'confirmed' ? 'success' : 'info',
     });
 

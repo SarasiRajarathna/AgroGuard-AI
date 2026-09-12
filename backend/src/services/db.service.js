@@ -2,12 +2,14 @@ const bcrypt = require('bcryptjs');
 const { supabase, isSupabaseConfigured } = require('../config/supabase');
 const {
   mapUser,
+  mapFarm,
   mapCase,
   mapVisit,
   mapAlert,
   mapNotification,
   mapOutbreak,
   toUserInsert,
+  toFarmInsert,
   toCaseInsert,
   toVisitInsert,
   toCaseUpdate,
@@ -157,88 +159,128 @@ let inMemoryStore = {
     },
   ],
 
+  farms: [
+    { id: 1, farmerId: 1, farmName: 'Jayabima Paddy Holding', crop: 'Paddy (Rice)', variety: 'Samba / Bg 352', latitude: 7.2912, longitude: 81.6724, district: 'Ampara', province: 'Eastern Province', area: '2.4 acres', createdAt: '2026-01-15T08:00:00Z' },
+    { id: 2, farmerId: 1, farmName: 'Samanala Tea Plot', crop: 'Tea', variety: 'TRI-2043', latitude: 6.9497, longitude: 80.7891, district: 'Nuwara Eliya', province: 'Central Province', area: '1.5 acres', createdAt: '2026-01-20T08:00:00Z' },
+    { id: 3, farmerId: 5, farmName: 'Wayamba Maize Fields', crop: 'Maize (Corn)', variety: 'NK-6240', latitude: 7.4863, longitude: 80.3623, district: 'Kurunegala', province: 'North Western Province', area: '3.5 acres', createdAt: '2026-02-20T08:00:00Z' },
+    { id: 4, farmerId: 6, farmName: 'Puttalam Palm Estate', crop: 'Coconut', variety: 'Sri Lanka Tall', latitude: 8.0362, longitude: 79.8283, district: 'Puttalam', province: 'North Western Province', area: '5.0 acres', createdAt: '2026-03-10T08:00:00Z' },
+    { id: 5, farmerId: 1, farmName: 'Uva Green Tomato Farm', crop: 'Tomato', variety: 'Thilina', latitude: 6.9934, longitude: 81.0550, district: 'Badulla', province: 'Uva Province', area: '0.5 acres', createdAt: '2026-03-15T08:00:00Z' },
+    { id: 6, farmerId: 10, farmName: 'Ampara East Paddy Field', crop: 'Paddy (Rice)', variety: 'Bg 358', latitude: 7.3050, longitude: 81.6810, district: 'Ampara', province: 'Eastern Province', area: '3.0 acres', createdAt: '2026-04-01T08:00:00Z' },
+    { id: 7, farmerId: 11, farmName: 'Digamadulla Holdings', crop: 'Paddy (Rice)', variety: 'At 362', latitude: 7.3200, longitude: 81.6950, district: 'Ampara', province: 'Eastern Province', area: '4.2 acres', createdAt: '2026-04-05T08:00:00Z' },
+    { id: 8, farmerId: 12, farmName: 'Uhana Rice Project', crop: 'Paddy (Rice)', variety: 'Bw 367', latitude: 7.3600, longitude: 81.6500, district: 'Ampara', province: 'Eastern Province', area: '2.8 acres', createdAt: '2026-04-10T08:00:00Z' },
+    { id: 9, farmerId: 13, farmName: 'Polonnaruwa Harvest Farm', crop: 'Paddy (Rice)', variety: 'Keeri Samba', latitude: 7.9403, longitude: 81.0188, district: 'Polonnaruwa', province: 'North Central Province', area: '6.0 acres', createdAt: '2026-04-12T08:00:00Z' },
+  ],
+
   cases: [
     {
       id: 'CASE-001',
+      farmId: 1,
       cropType: 'Paddy (Rice)',
       variety: 'Samba',
       location: 'Ampara, Eastern Province',
+      latitude: 7.2912,
+      longitude: 81.6724,
       disease: 'Blast Disease',
       scientificName: 'Magnaporthe oryzae',
       confidence: 94,
       severity: 'high',
       status: 'confirmed',
       spreadRisk: 78,
+      language: 'en',
       submittedAt: '2026-09-11T10:30:00Z',
       updatedAt: '2026-09-11T14:20:00Z',
       farmerId: 1,
       farmerName: 'Ruwan Perera',
       officerId: 2,
-      imageUrl: null,
+      imageUrl: 'https://images.unsplash.com/photo-1530507629858-e4977d30e9e0?w=800',
       symptoms: 'Diamond-shaped lesions with gray centers on leaves, brownish margins, neck rot visible',
       weatherContext: { humidity: 87, temp: 28, rainfall: 12 },
       nearbyAlerts: 3,
       treatmentSteps: [
         'Remove and destroy severely infected plant parts immediately',
         'Apply Tricyclazole (Beam) @ 0.6g/L or Isoprothiolane (Fuji-One) @ 1.5ml/L',
-        'Ensure proper field drainage to reduce humidity',
-        'Avoid excessive nitrogen application',
+        'Ensure proper field drainage to reduce persistent leaf humidity',
+        'Avoid excessive nitrogen application; balance with muriate of potash',
         'Monitor neighboring fields and alert farmers within 2km radius',
+      ],
+      preventionSteps: [
+        'Plant certified resistant cultivars (Bg 358, Bg 379/2)',
+        'Maintain balanced fertilization with split potassium doses',
+        'Avoid late-season planting when morning dew duration exceeds 8 hours',
       ],
       affectedArea: '0.8 acres',
       estimatedLoss: '35%',
       officerNotes: 'Field symptoms match typical blast lesions. Spore count accelerated by recent morning dew. Approved application of systemic fungicide.',
+      officerVerified: true,
+      verifiedDisease: 'Blast Disease',
+      verifiedSeverity: 'high',
+      verifiedAt: '2026-09-11T14:20:00Z',
+      verifiedBy: 2,
     },
     {
       id: 'CASE-002',
+      farmId: 2,
       cropType: 'Tea',
       variety: 'TRI-2043',
       location: 'Nuwara Eliya, Central Province',
+      latitude: 6.9497,
+      longitude: 80.7891,
       disease: 'Blister Blight',
       scientificName: 'Exobasidium vexans',
       confidence: 89,
       severity: 'medium',
       status: 'escalated',
       spreadRisk: 62,
+      language: 'en',
       submittedAt: '2026-09-10T08:15:00Z',
       updatedAt: '2026-09-10T16:45:00Z',
       farmerId: 1,
       farmerName: 'Ruwan Perera',
       officerId: null,
-      imageUrl: null,
+      imageUrl: 'https://images.unsplash.com/photo-1588668214407-6ea9a6d8c272?w=800',
       symptoms: 'Pale green translucent spots on young leaves, white powdery growth on underside',
       weatherContext: { humidity: 92, temp: 18, rainfall: 28 },
-      nearbyAlerts: 7,
+      nearbyAlerts: 1,
       treatmentSteps: [
         'Apply copper-based fungicides (Copper oxychloride) at 2.5g/L',
         'Improve air circulation by proper pruning',
         'Avoid working in wet conditions to prevent spread',
         'Apply systemic fungicide Hexaconazole @ 2ml/10L',
       ],
+      preventionSteps: [
+        'Regulate shade trees to allow morning sun penetration',
+        'Prune bushes on correct schedule',
+        'Harvest tender flush systematically',
+      ],
       affectedArea: '1.2 acres',
       estimatedLoss: '20%',
       escalationReason: 'Unusually fast spread on tender flush leaves despite initial copper spray.',
+      officerVerified: false,
     },
     {
       id: 'CASE-003',
+      farmId: 3,
       cropType: 'Maize (Corn)',
       variety: 'NK-6240',
       location: 'Kurunegala, North Western Province',
+      latitude: 7.4863,
+      longitude: 80.3623,
       disease: 'Fall Armyworm',
       scientificName: 'Spodoptera frugiperda',
       confidence: 97,
       severity: 'critical',
       status: 'pending',
       spreadRisk: 91,
+      language: 'en',
       submittedAt: '2026-09-11T06:00:00Z',
       updatedAt: '2026-09-11T06:00:00Z',
       farmerId: 5,
       farmerName: 'Chamara Bandara',
       officerId: null,
-      imageUrl: null,
+      imageUrl: 'https://images.unsplash.com/photo-1551893478-d726eaf0442c?w=800',
       symptoms: 'Ragged holes in leaves, frass in whorls, irregular window feeding on leaves',
       weatherContext: { humidity: 75, temp: 32, rainfall: 0 },
-      nearbyAlerts: 12,
+      nearbyAlerts: 4,
       treatmentSteps: [
         'Apply Emamectin benzoate (Proclaim) @ 0.4g/L immediately',
         'Use Spinetoram (Delegate) @ 0.5ml/L for effective control',
@@ -246,29 +288,40 @@ let inMemoryStore = {
         'Alert neighboring maize farmers within 5km radius',
         'Conduct scouting every 3 days',
       ],
+      preventionSteps: [
+        'Synchronized planting across adjacent blocks',
+        'Intercrop with non-host pulses',
+        'Handpick egg masses and young larvae during early whorl stage',
+      ],
       affectedArea: '3.5 acres',
       estimatedLoss: '60%',
+      escalationReason: 'Critical pest severity detected automatically by AI.',
+      officerVerified: false,
     },
     {
       id: 'CASE-004',
+      farmId: 4,
       cropType: 'Coconut',
       variety: 'Sri Lanka Tall',
       location: 'Puttalam, North Western Province',
+      latitude: 8.0362,
+      longitude: 79.8283,
       disease: 'Weligama Coconut Leaf Wilt',
       scientificName: 'Phytoplasma sp.',
-      confidence: 72,
+      confidence: 71,
       severity: 'high',
       status: 'escalated',
       spreadRisk: 85,
+      language: 'en',
       submittedAt: '2026-09-09T11:00:00Z',
       updatedAt: '2026-09-10T09:30:00Z',
       farmerId: 6,
       farmerName: 'Priya Jayawardena',
       officerId: 2,
-      imageUrl: null,
+      imageUrl: 'https://images.unsplash.com/photo-1598880940371-c756e015fea1?w=800',
       symptoms: 'Yellowing of lower fronds, premature nut fall, reduction in inflorescences',
       weatherContext: { humidity: 80, temp: 30, rainfall: 5 },
-      nearbyAlerts: 5,
+      nearbyAlerts: 2,
       treatmentSteps: [
         'Remove and burn all infected palms immediately',
         'Apply oxytetracycline injections to early-stage infected palms',
@@ -276,38 +329,142 @@ let inMemoryStore = {
         'Quarantine the affected area',
         'Report to Coconut Cultivation Board immediately',
       ],
+      preventionSteps: [
+        'Plant vector-tolerant coconut varieties',
+        'Regular weed sanitation to suppress vector habitats',
+        'Strict quarantine on transport of planting material',
+      ],
       affectedArea: '5 acres',
       estimatedLoss: '45%',
-      escalationReason: '8 palms in row 3 exhibiting frond necrosis. Need containment directive.',
+      escalationReason: 'Low AI confidence (71%) on leaf wilt. Automatically escalated for field officer validation.',
+      officerVerified: false,
     },
     {
       id: 'CASE-005',
+      farmId: 5,
       cropType: 'Tomato',
-      variety: 'T-245',
+      variety: 'Thilina',
       location: 'Badulla, Uva Province',
+      latitude: 6.9934,
+      longitude: 81.0550,
       disease: 'Late Blight',
       scientificName: 'Phytophthora infestans',
       confidence: 91,
       severity: 'high',
       status: 'treated',
       spreadRisk: 45,
+      language: 'en',
       submittedAt: '2026-09-08T14:00:00Z',
       updatedAt: '2026-09-09T10:00:00Z',
       farmerId: 1,
       farmerName: 'Ruwan Perera',
       officerId: 2,
-      imageUrl: null,
+      imageUrl: 'https://images.unsplash.com/photo-1592841200221-a6898f307baa?w=800',
       symptoms: 'Water-soaked lesions on leaves, white mold on undersides, brown stem lesions',
       weatherContext: { humidity: 90, temp: 22, rainfall: 18 },
-      nearbyAlerts: 2,
+      nearbyAlerts: 1,
       treatmentSteps: [
         'Apply Metalaxyl + Mancozeb (Ridomil Gold) @ 2.5g/L',
         'Remove affected plant material and dispose properly',
         'Improve drainage and reduce leaf wetness',
         'Apply preventive copper sprays every 7 days',
       ],
+      preventionSteps: [
+        'Avoid overhead irrigation',
+        'Stake plants and mulch soil',
+        'Rotate with non-solanaceous crops',
+      ],
       affectedArea: '0.5 acres',
       estimatedLoss: '25%',
+      officerVerified: true,
+      verifiedDisease: 'Late Blight',
+      verifiedSeverity: 'high',
+      verifiedAt: '2026-09-09T10:00:00Z',
+      verifiedBy: 2,
+    },
+    {
+      id: 'CASE-006',
+      farmId: 6,
+      cropType: 'Paddy (Rice)',
+      variety: 'Bg 358',
+      location: 'Ampara East, Eastern Province',
+      latitude: 7.3050,
+      longitude: 81.6810,
+      disease: 'Blast Disease',
+      scientificName: 'Magnaporthe oryzae',
+      confidence: 92,
+      severity: 'high',
+      status: 'confirmed',
+      spreadRisk: 82,
+      language: 'en',
+      submittedAt: '2026-09-11T16:00:00Z',
+      updatedAt: '2026-09-11T18:30:00Z',
+      farmerId: 10,
+      farmerName: 'Sunil Jayasuriya',
+      officerId: 2,
+      imageUrl: 'https://images.unsplash.com/photo-1530507629858-e4977d30e9e0?w=800',
+      symptoms: 'Spindle-shaped brown lesions with gray centers spreading rapidly across leaf blades',
+      weatherContext: { humidity: 88, temp: 28, rainfall: 15 },
+      nearbyAlerts: 3,
+      treatmentSteps: [
+        'Apply Tricyclazole @ 0.6g/L immediately',
+        'Drain stagnant water from paddy bunds',
+        'Suspend nitrogen top dressing',
+      ],
+      preventionSteps: [
+        'Plant resistant varieties',
+        'Maintain wide spacing for air ventilation',
+      ],
+      affectedArea: '1.5 acres',
+      estimatedLoss: '30%',
+      officerNotes: 'Matches neighboring CASE-001 spore propagation pattern. Confirmed.',
+      officerVerified: true,
+      verifiedDisease: 'Blast Disease',
+      verifiedSeverity: 'high',
+      verifiedAt: '2026-09-11T18:30:00Z',
+      verifiedBy: 2,
+    },
+    {
+      id: 'CASE-007',
+      farmId: 7,
+      cropType: 'Paddy (Rice)',
+      variety: 'At 362',
+      location: 'Digamadulla, Eastern Province',
+      latitude: 7.3200,
+      longitude: 81.6950,
+      disease: 'Blast Disease',
+      scientificName: 'Magnaporthe oryzae',
+      confidence: 95,
+      severity: 'critical',
+      status: 'confirmed',
+      spreadRisk: 88,
+      language: 'en',
+      submittedAt: '2026-09-11T19:00:00Z',
+      updatedAt: '2026-09-11T20:45:00Z',
+      farmerId: 11,
+      farmerName: 'Kithsiri Gamage',
+      officerId: 2,
+      imageUrl: 'https://images.unsplash.com/photo-1530507629858-e4977d30e9e0?w=800',
+      symptoms: 'Brownish necrotic lesions on flag leaves, neck blast symptoms emerging',
+      weatherContext: { humidity: 89, temp: 27, rainfall: 18 },
+      nearbyAlerts: 3,
+      treatmentSteps: [
+        'Urgent application of Isoprothiolane @ 1.5ml/L',
+        'Create buffer isolation strip around affected blocks',
+        'Alert regional extension center',
+      ],
+      preventionSteps: [
+        'Treat seeds with carbendazim prior to sowing',
+        'Avoid late season nitrogen application',
+      ],
+      affectedArea: '2.0 acres',
+      estimatedLoss: '45%',
+      officerNotes: 'Third confirmed blast case in 5km corridor. Urgent outbreak response triggered.',
+      officerVerified: true,
+      verifiedDisease: 'Blast Disease',
+      verifiedSeverity: 'critical',
+      verifiedAt: '2026-09-11T20:45:00Z',
+      verifiedBy: 2,
     },
   ],
 
@@ -335,6 +492,11 @@ let inMemoryStore = {
       status: 'completed',
       priority: 'critical',
       notes: 'Fall armyworm pheromone traps deployed successfully.',
+      observedSymptoms: 'Larval frass in 40% of whorls inspected. First instar larvae confirmed.',
+      confirmedDisease: 'Fall Armyworm',
+      verifiedSeverity: 'critical',
+      recommendation: 'Deploy synchronized Emamectin benzoate application across 3 adjacent farms.',
+      completedAt: '2026-09-11T15:00:00Z',
     },
     {
       id: 'VISIT-003',
@@ -346,28 +508,31 @@ let inMemoryStore = {
       scheduledDate: '2026-09-15',
       status: 'scheduled',
       priority: 'high',
-      notes: 'Assess Weligama leaf wilt symptom spread.',
+      notes: 'Assess Weligama leaf wilt symptom spread and vector management protocol.',
     },
     {
       id: 'VISIT-004',
-      farmerId: 1,
-      farmerName: 'Ruwan Perera',
-      caseId: null,
-      location: 'Kandy, Central Province',
-      cropType: 'Tea',
-      scheduledDate: '2026-09-16',
-      status: 'scheduled',
-      priority: 'medium',
-      notes: 'Routine check of foliage fungicide spray coverage.',
+      farmerId: 11,
+      farmerName: 'Kithsiri Gamage',
+      caseId: 'CASE-007',
+      location: 'Digamadulla, Eastern Province',
+      cropType: 'Paddy (Rice)',
+      scheduledDate: '2026-09-11',
+      status: 'completed',
+      priority: 'critical',
+      notes: 'Emergency cluster verification for Ampara Rice Belt.',
+      observedSymptoms: 'Neck blast sporulation visible on 30% of hills. Severe leaf necrosis.',
+      confirmedDisease: 'Blast Disease',
+      verifiedSeverity: 'critical',
+      recommendation: 'Quarantine block 3, initiate spray buffer, alert all farms within 10km.',
+      completedAt: '2026-09-11T20:45:00Z',
     },
   ],
 
   outbreaks: [
-    { id: 1, disease: 'Fall Armyworm', crop: 'Maize', region: 'North Western', activeCases: 47, trend: 'rising', severity: 'critical', lastUpdated: '2026-09-11' },
-    { id: 2, disease: 'Blast Disease', crop: 'Paddy', region: 'Eastern', activeCases: 31, trend: 'stable', severity: 'high', lastUpdated: '2026-09-11' },
-    { id: 3, disease: 'Blister Blight', crop: 'Tea', region: 'Central', activeCases: 19, trend: 'falling', severity: 'medium', lastUpdated: '2026-09-10' },
-    { id: 4, disease: 'Leaf Curl Virus', crop: 'Chilli', region: 'Uva', activeCases: 12, trend: 'rising', severity: 'medium', lastUpdated: '2026-09-10' },
-    { id: 5, disease: 'Weligama Leaf Wilt', crop: 'Coconut', region: 'North Western', activeCases: 8, trend: 'stable', severity: 'high', lastUpdated: '2026-09-09' },
+    { id: 1, disease: 'Blast Disease', crop: 'Paddy (Rice)', region: 'Eastern Province', district: 'Ampara', centerLat: 7.3054, centerLng: 81.6828, radiusKm: 10.0, activeCases: 3, affectedFarms: 4, trend: 'rising', severity: 'critical', status: 'confirmed', confirmedBy: 4, confirmedAt: '2026-09-11T21:00:00Z', lastUpdated: '2026-09-11' },
+    { id: 2, disease: 'Fall Armyworm', crop: 'Maize (Corn)', region: 'North Western Province', district: 'Kurunegala', centerLat: 7.4863, centerLng: 80.3623, radiusKm: 15.0, activeCases: 1, affectedFarms: 1, trend: 'rising', severity: 'high', status: 'potential', confirmedBy: null, confirmedAt: null, lastUpdated: '2026-09-11' },
+    { id: 3, disease: 'Blister Blight', crop: 'Tea', region: 'Central Province', district: 'Nuwara Eliya', centerLat: 6.9497, centerLng: 80.7891, radiusKm: 8.0, activeCases: 1, affectedFarms: 1, trend: 'stable', severity: 'medium', status: 'potential', confirmedBy: null, confirmedAt: null, lastUpdated: '2026-09-10' },
   ],
 
   alerts: [
@@ -376,13 +541,13 @@ let inMemoryStore = {
       province: 'Eastern Province',
       threatLevel: 'Critical',
       cropTarget: 'Paddy (Rice)',
-      message: 'High Risk of Blast Disease Spore Spread. Persistent humidity (88%) and 28°C temperatures favor rapid fungal propagation. 3 neighbor holdings flagged within 4.2 km.',
+      message: 'Confirmed Blast Disease Outbreak Cluster in Ampara Agrarian Division. 3 active confirmed foci within 4.2 km. Neighboring farms within 10 km must apply preventive fungicide immediately.',
       createdAt: '2026-09-11T12:00:00Z',
     },
     {
       id: 2,
       province: 'North Western Province',
-      threatLevel: 'Critical',
+      threatLevel: 'High',
       cropTarget: 'Maize',
       message: 'Fall Armyworm active watch triggered across Kurunegala and Puttalam. Inspect maize whorls immediately.',
       createdAt: '2026-09-10T10:00:00Z',
@@ -390,21 +555,23 @@ let inMemoryStore = {
   ],
 
   notifications: [
-    { id: 1, userId: 1, text: 'Fall Armyworm outbreak detected in your area', time: '2m ago', type: 'alert', isRead: false },
-    { id: 2, userId: 1, text: 'Your case CASE-001 has been confirmed by officer Dr. Anura Bandara', time: '1h ago', type: 'success', isRead: false },
-    { id: 3, userId: 1, text: 'Treatment reminder: Apply fungicide today', time: '3h ago', type: 'info', isRead: false },
-    { id: 4, userId: 2, text: '2 Escalated cases require field verification in Eastern Division', time: '30m ago', type: 'alert', isRead: false },
+    { id: 1, userId: 1, text: 'URGENT: Blast Disease outbreak confirmed within 2.1 km of your farm Jayabima Holding. Inspect bunds immediately.', time: '2m ago', type: 'alert', isRead: false, link: '/farmer/cases', createdAt: '2026-09-11T21:02:00Z' },
+    { id: 2, userId: 1, text: 'Your case CASE-001 has been confirmed by officer Dr. Anura Bandara', time: '1h ago', type: 'success', isRead: false, link: '/farmer/diagnosis/CASE-001', createdAt: '2026-09-11T14:20:00Z' },
+    { id: 3, userId: 1, text: 'Treatment reminder: Apply Tricyclazole spray today before morning dew', time: '3h ago', type: 'info', isRead: false, link: '/farmer/diagnosis/CASE-001', createdAt: '2026-09-11T12:00:00Z' },
+    { id: 4, userId: 2, text: 'CASE-004 escalated to you: Low confidence AI diagnosis requires field verification in Puttalam.', time: '30m ago', type: 'alert', isRead: false, link: '/officer/case/CASE-004', createdAt: '2026-09-11T20:30:00Z' },
+    { id: 5, userId: 11, text: 'Field inspection completed for CASE-007 by Dr. Anura Bandara. Case marked confirmed.', time: '3h ago', type: 'success', isRead: true, link: '/farmer/diagnosis/CASE-007', createdAt: '2026-09-11T20:45:00Z' },
   ],
 
   activityLogs: [],
 };
 
 // Auto-increment helpers
-let caseCounter = 6;
+let caseCounter = 8;
+let farmCounter = 10;
 let visitCounter = 5;
 let alertCounter = 3;
-let notifCounter = 5;
-let userCounter = 10;
+let notifCounter = 6;
+let userCounter = 14;
 
 function filterCases(cases, { farmerId, status, search, role } = {}) {
   let result = [...cases];
@@ -581,13 +748,83 @@ class DBService {
     return mapCase(inMemoryStore.cases.find(c => c.id === id) || null);
   }
 
+  async getFarms(filters = {}) {
+    if (isSupabaseConfigured) {
+      try {
+        let query = supabase.from('farms').select('*').order('id', { ascending: true });
+        if (filters.farmerId) {
+          query = query.eq('farmer_id', Number(filters.farmerId));
+        }
+        const { data, error } = await query;
+        if (!error && data) return data.map(mapFarm);
+      } catch (err) {
+        console.warn('[DBService] Supabase getFarms error:', err.message);
+      }
+    }
+
+    let farms = [...(inMemoryStore.farms || [])];
+    if (filters.farmerId) {
+      farms = farms.filter(f => Number(f.farmerId) === Number(filters.farmerId));
+    }
+    return farms.map(mapFarm);
+  }
+
+  async getFarmById(id) {
+    const numId = Number(id);
+    if (isSupabaseConfigured) {
+      try {
+        const { data, error } = await supabase.from('farms').select('*').eq('id', numId).single();
+        if (!error && data) return mapFarm(data);
+      } catch (err) {
+        console.warn('[DBService] Supabase getFarmById error:', err.message);
+      }
+    }
+    return mapFarm((inMemoryStore.farms || []).find(f => f.id === numId) || null);
+  }
+
+  async createFarm(farmData) {
+    const newFarm = {
+      id: farmCounter++,
+      farmerId: farmData.farmerId ? Number(farmData.farmerId) : 1,
+      farmName: farmData.farmName || 'My Farm',
+      crop: farmData.crop || 'Paddy',
+      variety: farmData.variety || '',
+      latitude: Number(farmData.latitude ?? 7.2912),
+      longitude: Number(farmData.longitude ?? 81.6724),
+      district: farmData.district || 'Ampara',
+      province: farmData.province || 'Eastern Province',
+      area: farmData.area || '1.0 acre',
+      createdAt: new Date().toISOString(),
+    };
+
+    if (isSupabaseConfigured) {
+      try {
+        const { data, error } = await supabase.from('farms').insert([toFarmInsert(newFarm)]).select().single();
+        if (!error && data) {
+          const mapped = mapFarm(data);
+          inMemoryStore.farms.push(mapped);
+          return mapped;
+        }
+      } catch (err) {
+        console.warn('[DBService] Supabase createFarm error:', err.message);
+      }
+    }
+
+    inMemoryStore.farms.push(newFarm);
+    return mapFarm(newFarm);
+  }
+
   async createCase(caseData) {
     const newId = `CASE-${String(caseCounter++).padStart(3, '0')}`;
     const newCase = {
       id: newId,
+      farmId: caseData.farmId ? Number(caseData.farmId) : null,
       cropType: caseData.cropType,
       variety: caseData.variety || '',
       location: caseData.location,
+      latitude: caseData.latitude !== undefined && caseData.latitude !== null ? Number(caseData.latitude) : null,
+      longitude: caseData.longitude !== undefined && caseData.longitude !== null ? Number(caseData.longitude) : null,
+      language: caseData.language || 'en',
       fieldArea: caseData.fieldArea || '',
       cropStage: caseData.cropStage || '',
       disease: caseData.disease,
@@ -607,8 +844,14 @@ class DBService {
       weatherContext: caseData.weatherContext || { humidity: 85, temp: 28, rainfall: 10 },
       nearbyAlerts: caseData.nearbyAlerts || 0,
       treatmentSteps: caseData.treatmentSteps || [],
+      preventionSteps: caseData.preventionSteps || [],
       affectedArea: caseData.affectedArea || caseData.fieldArea || '1.0 acre',
       estimatedLoss: caseData.estimatedLoss || '30%',
+      officerVerified: false,
+      verifiedDisease: null,
+      verifiedSeverity: null,
+      verifiedAt: null,
+      verifiedBy: null,
     };
 
     if (isSupabaseConfigured) {
@@ -696,6 +939,11 @@ class DBService {
       status: 'scheduled',
       priority: visitData.priority || 'medium',
       notes: visitData.notes || '',
+      observedSymptoms: visitData.observedSymptoms || '',
+      confirmedDisease: visitData.confirmedDisease || '',
+      verifiedSeverity: visitData.verifiedSeverity || '',
+      recommendation: visitData.recommendation || '',
+      completedAt: null,
     };
 
     if (isSupabaseConfigured) {
@@ -722,29 +970,90 @@ class DBService {
     return mapVisit(newVisit);
   }
 
-  async updateVisitStatus(id, status) {
+  async updateVisitStatus(id, updateData) {
+    const isObject = typeof updateData === 'object' && updateData !== null;
+    const status = isObject ? (updateData.status || 'completed') : updateData;
+    const observedSymptoms = isObject ? updateData.observedSymptoms : null;
+    const confirmedDisease = isObject ? updateData.confirmedDisease : null;
+    const verifiedSeverity = isObject ? updateData.verifiedSeverity : null;
+    const recommendation = isObject ? updateData.recommendation : null;
+    const notes = isObject ? updateData.notes : null;
+
+    let updatedVisit = null;
+
     if (isSupabaseConfigured) {
       try {
+        const dbUpdates = { status, updated_at: new Date().toISOString() };
+        if (observedSymptoms) dbUpdates.observed_symptoms = observedSymptoms;
+        if (confirmedDisease) dbUpdates.confirmed_disease = confirmedDisease;
+        if (verifiedSeverity) dbUpdates.verified_severity = verifiedSeverity;
+        if (recommendation) dbUpdates.recommendation = recommendation;
+        if (notes) dbUpdates.notes = notes;
+        if (status === 'completed') dbUpdates.completed_at = new Date().toISOString();
+
         const { data, error } = await supabase
           .from('field_visits')
-          .update({ status, updated_at: new Date().toISOString() })
+          .update(dbUpdates)
           .eq('id', id)
           .select()
           .single();
         if (!error && data) {
-          const visit = inMemoryStore.fieldVisits.find(v => v.id === id);
-          if (visit) visit.status = status;
-          return mapVisit(data);
+          const idx = inMemoryStore.fieldVisits.findIndex(v => v.id === id);
+          if (idx !== -1) Object.assign(inMemoryStore.fieldVisits[idx], mapVisit(data));
+          updatedVisit = mapVisit(data);
         }
       } catch (err) {
         console.warn('[DBService] Supabase updateVisitStatus error:', err.message);
       }
     }
 
-    const visit = inMemoryStore.fieldVisits.find(v => v.id === id);
-    if (!visit) return null;
-    visit.status = status;
-    return mapVisit(visit);
+    if (!updatedVisit) {
+      const visit = inMemoryStore.fieldVisits.find(v => v.id === id);
+      if (!visit) return null;
+      visit.status = status;
+      if (observedSymptoms !== null && observedSymptoms !== undefined) visit.observedSymptoms = observedSymptoms;
+      if (confirmedDisease !== null && confirmedDisease !== undefined) visit.confirmedDisease = confirmedDisease;
+      if (verifiedSeverity !== null && verifiedSeverity !== undefined) visit.verifiedSeverity = verifiedSeverity;
+      if (recommendation !== null && recommendation !== undefined) visit.recommendation = recommendation;
+      if (notes !== null && notes !== undefined) visit.notes = notes;
+      if (status === 'completed') visit.completedAt = new Date().toISOString();
+      updatedVisit = mapVisit(visit);
+    }
+
+    // WORKFLOW INTEGRATION: If visit completed and tied to a case, update the original case and notify the farmer!
+    if (status === 'completed' && updatedVisit.caseId) {
+      const existingCase = await this.getCaseById(updatedVisit.caseId);
+      if (existingCase) {
+        const isRejected = confirmedDisease === 'Rejected';
+        const finalStatus = isRejected ? 'rejected' : 'confirmed';
+        const finalDisease = (confirmedDisease && !isRejected) ? confirmedDisease : existingCase.disease;
+        const finalSeverity = verifiedSeverity || existingCase.severity;
+
+        await this.updateCase(updatedVisit.caseId, {
+          status: finalStatus,
+          disease: finalDisease,
+          severity: finalSeverity,
+          officerVerified: true,
+          verifiedDisease: finalDisease,
+          verifiedSeverity: finalSeverity,
+          officerNotes: notes || updatedVisit.notes,
+          officerRecommendation: recommendation || updatedVisit.recommendation,
+          verifiedAt: new Date().toISOString(),
+          verifiedBy: updatedVisit.officerId || 2,
+        });
+
+        // Push automatic notification to the farmer
+        if (existingCase.farmerId) {
+          await this.createNotification({
+            userId: existingCase.farmerId,
+            text: `Field inspection completed for your case ${updatedVisit.caseId} (${existingCase.cropType}). Confirmed diagnosis: ${finalDisease} (${finalSeverity}). Recommendation: ${recommendation || notes || 'Follow approved treatment protocol.'}`,
+            type: isRejected ? 'info' : 'success',
+          });
+        }
+      }
+    }
+
+    return updatedVisit;
   }
 
   async getOutbreaks() {

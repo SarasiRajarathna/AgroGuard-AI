@@ -54,9 +54,24 @@ async function createVisit(req, res, next) {
 async function updateVisitStatus(req, res, next) {
   try {
     const { id } = req.params;
-    const { status } = req.body;
+    const {
+      status,
+      observedSymptoms,
+      confirmedDisease,
+      verifiedSeverity,
+      recommendation,
+      notes,
+    } = req.body;
 
-    const updated = await dbService.updateVisitStatus(id, status || 'completed');
+    const updated = await dbService.updateVisitStatus(id, status || 'completed', {
+      observedSymptoms,
+      confirmedDisease,
+      verifiedSeverity,
+      recommendation,
+      notes,
+      officerName: req.user?.name || 'Dr. Anura Bandara',
+    });
+
     if (!updated) {
       return res.status(404).json({
         success: false,
@@ -69,12 +84,12 @@ async function updateVisitStatus(req, res, next) {
       action: 'FIELD_VISIT_STATUS_UPDATED',
       entity: 'field_visits',
       entityId: id,
-      metadata: { status },
+      metadata: { status, confirmedDisease },
     });
 
     return res.status(200).json({
       success: true,
-      message: `Field visit ${id} status updated to ${status || 'completed'}.`,
+      message: `Field visit ${id} recorded as ${status || 'completed'} and linked case updated with officer findings.`,
       data: updated,
     });
   } catch (error) {

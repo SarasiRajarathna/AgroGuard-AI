@@ -3,8 +3,8 @@ const { getWeatherForLocation, getWeeklyForecast } = require('../services/weathe
 // GET /api/weather/current
 async function getCurrentWeather(req, res, next) {
   try {
-    const { location } = req.query;
-    const weather = getWeatherForLocation(location || 'Ampara');
+    const { location, lat, lng } = req.query;
+    const weather = await getWeatherForLocation(location || 'Ampara', lat, lng);
     return res.status(200).json({
       success: true,
       data: weather,

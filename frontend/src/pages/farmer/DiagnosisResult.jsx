@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiAlertTriangle, FiCheckCircle, FiShield, FiShare2, FiPrinter, FiUserCheck, FiSend, FiClock, FiCloudRain, FiMapPin, FiInfo } from 'react-icons/fi';
 import { RiLeafLine, RiRadarLine, RiCapsuleLine } from 'react-icons/ri';
@@ -7,27 +7,72 @@ import StatusBadge from '../../components/StatusBadge';
 import RiskCard from '../../components/RiskCard';
 import Modal from '../../components/Modal';
 import Toast from '../../components/Toast';
-import { mockCases } from '../../services/api';
+import Loading from '../../components/Loading';
+import { casesAPI } from '../../services/api';
 
 export default function DiagnosisResult() {
   const { caseId } = useParams();
   const navigate = useNavigate();
 
-  // Find target case or fallback to first
-  const caseData = mockCases.find(c => c.id === caseId) || mockCases[0];
-
+  const [caseData, setCaseData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [showOverlay, setShowOverlay] = useState(true);
   const [escalateModalOpen, setEscalateModalOpen] = useState(false);
   const [escalationReason, setEscalationReason] = useState('');
-  const [escalated, setEscalated] = useState(caseData.status === 'escalated');
+  const [escalated, setEscalated] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
 
-  const handleEscalateSubmit = (e) => {
+  useEffect(() => {
+    let isMounted = true;
+    async function loadCase() {
+      try {
+        setLoading(true);
+        const res = await casesAPI.getById(caseId);
+        if (isMounted && res.data) {
+          setCaseData(res.data);
+          setEscalated(res.data.status === 'escalated');
+        }
+      } catch (err) {
+        console.error('[DiagnosisResult] Failed to load case:', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    if (caseId) {
+      loadCase();
+    }
+  }, [caseId]);
+
+  const handleEscalateSubmit = async (e) => {
     e.preventDefault();
-    setEscalated(true);
-    setEscalateModalOpen(false);
-    setToastMessage('Case successfully escalated to Agriculture Extension Officer for field confirmation.');
+    try {
+      const res = await casesAPI.escalate(caseId, escalationReason);
+      setEscalated(true);
+      if (res.data) {
+        setCaseData(res.data);
+      }
+      setEscalateModalOpen(false);
+      setToastMessage('Case successfully escalated to Agriculture Extension Officer for field confirmation.');
+    } catch (err) {
+      setToastMessage(err.message || 'Failed to escalate case. Please try again.');
+    }
   };
+
+  if (loading) {
+    return <Loading fullPage message="Retrieving AI leaf pathology findings..." />;
+  }
+
+  if (!caseData) {
+    return (
+      <div className="p-8 text-center space-y-3">
+        <p className="text-gray-600 font-semibold">Case record not found or could not be loaded.</p>
+        <button onClick={() => navigate('/farmer')} className="px-4 py-2 bg-emerald-700 text-white text-xs rounded-xl font-bold">
+          Return to Dashboard
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

@@ -25,14 +25,20 @@ export default function Login() {
     setEmail(roleCredentials[newRole].email);
   };
 
-  const handleSubmit = (e) => {
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMsg(null);
     setLoading(true);
-    setTimeout(() => {
-      login(role);
+    try {
+      const loggedInUser = await login(email, password, role);
+      navigate(`/${loggedInUser.role || role}`);
+    } catch (err) {
+      setErrorMsg(err.message || 'Login failed. Please verify credentials.');
+    } finally {
       setLoading(false);
-      navigate(`/${role}`);
-    }, 600);
+    }
   };
 
   return (
@@ -146,6 +152,12 @@ export default function Login() {
               <span>Acting as: <strong>{roleCredentials[role].name}</strong> ({roleCredentials[role].title})</span>
             </div>
           </div>
+
+          {errorMsg && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-center gap-2">
+              <span className="font-semibold">Error:</span> {errorMsg}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>

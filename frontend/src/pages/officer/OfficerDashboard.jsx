@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiClipboard, FiClock, FiCheckCircle, FiMapPin, FiCalendar, FiArrowRight, FiSearch, FiFilter, FiAlertTriangle } from 'react-icons/fi';
 import { RiShieldCheckLine, RiTruckLine } from 'react-icons/ri';
@@ -6,7 +6,8 @@ import PageHeader from '../../components/PageHeader';
 import StatCard from '../../components/StatCard';
 import StatusBadge from '../../components/StatusBadge';
 import EmptyState from '../../components/EmptyState';
-import { mockCases, mockVisits } from '../../services/api';
+import Loading from '../../components/Loading';
+import { casesAPI, visitsAPI, adminAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
 export default function OfficerDashboard() {
@@ -14,20 +15,54 @@ export default function OfficerDashboard() {
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [cases, setCases] = useState([]);
+  const [visits, setVisits] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadOfficerData() {
+      try {
+        setLoading(true);
+        const [casesRes, visitsRes, statsRes] = await Promise.all([
+          casesAPI.getAll({ role: 'officer' }).catch(() => ({ data: [] })),
+          visitsAPI.getAll().catch(() => ({ data: [] })),
+          adminAPI.getStats('officer').catch(() => ({ data: null })),
+        ]);
+
+        if (isMounted) {
+          if (casesRes.data) setCases(casesRes.data);
+          if (visitsRes.data) setVisits(visitsRes.data);
+          if (statsRes.data) setStats(statsRes.data);
+        }
+      } catch (err) {
+        console.error('[OfficerDashboard] Failed to load officer data:', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    loadOfficerData();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Filter cases
-  const filteredCases = mockCases.filter(c => {
-    const matchesSearch = c.cropType.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          c.farmerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          c.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          c.disease.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
+  const filteredCases = cases.filter(c => {
+    const matchesSearch =
+      c.cropType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      c.farmerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      c.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      c.disease?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || c.status?.toLowerCase() === statusFilter.toLowerCase();
     return matchesSearch && matchesStatus;
   });
 
-  const pendingReview = mockCases.filter(c => c.status === 'pending' || c.status === 'escalated').length;
-  const scheduledVisits = mockVisits.filter(v => v.status === 'scheduled').length;
-  const confirmedCases = mockCases.filter(c => c.status === 'confirmed').length;
+  const pendingReview = stats?.pendingReview ?? cases.filter(c => c.status === 'pending' || c.status === 'escalated').length;
+  const scheduledVisits = stats?.fieldVisitsToday ?? visits.filter(v => v.status === 'scheduled').length;
+  const confirmedCases = stats?.confirmedThisWeek ?? cases.filter(c => c.status === 'confirmed').length;
 
   return (
     <div className="space-y-6">

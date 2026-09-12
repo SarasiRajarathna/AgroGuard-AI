@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FiMenu, FiBell, FiChevronDown, FiLogOut, FiUser, FiSettings } from 'react-icons/fi';
 import { RiLeafLine } from 'react-icons/ri';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { notificationsAPI } from '../services/api';
 
 const roleTheme = {
   farmer: { label: 'Farmer', bg: 'bg-green-100', text: 'text-green-800', dot: 'bg-green-500' },
@@ -16,6 +17,39 @@ export default function Navbar({ setIsOpen }) {
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadNotifications() {
+      try {
+        const res = await notificationsAPI.getAll();
+        if (isMounted && res.data) {
+          setNotifications(res.data);
+        }
+      } catch (err) {
+        console.warn('[Navbar] Failed to load notifications:', err.message);
+      }
+    }
+
+    if (user) {
+      loadNotifications();
+      const interval = setInterval(loadNotifications, 30000);
+      return () => {
+        isMounted = false;
+        clearInterval(interval);
+      };
+    }
+  }, [user]);
+
+  const handleMarkRead = async (id) => {
+    try {
+      await notificationsAPI.markRead(id);
+      setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
+    } catch (err) {
+      console.error('Failed to mark notification as read:', err);
+    }
+  };
 
   const theme = roleTheme[user?.role] || roleTheme.farmer;
 
@@ -23,12 +57,6 @@ export default function Navbar({ setIsOpen }) {
     logout();
     navigate('/login');
   };
-
-  const notifications = [
-    { id: 1, text: 'Fall Armyworm outbreak detected in your area', time: '2m ago', type: 'alert' },
-    { id: 2, text: 'Your case CASE-001 has been confirmed by officer', time: '1h ago', type: 'success' },
-    { id: 3, text: 'Treatment reminder: Apply fungicide today', time: '3h ago', type: 'info' },
-  ];
 
   return (
     <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30 shadow-sm">

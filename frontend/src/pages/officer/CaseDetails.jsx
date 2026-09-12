@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiCheck, FiX, FiCalendar, FiUser, FiMapPin, FiPhone, FiAlertTriangle, FiCheckCircle, FiSend, FiFileText } from 'react-icons/fi';
 import { RiLeafLine, RiRadarLine, RiShieldCheckLine } from 'react-icons/ri';
@@ -6,18 +6,18 @@ import PageHeader from '../../components/PageHeader';
 import StatusBadge from '../../components/StatusBadge';
 import Toast from '../../components/Toast';
 import Modal from '../../components/Modal';
-import { mockCases } from '../../services/api';
+import Loading from '../../components/Loading';
+import { casesAPI } from '../../services/api';
 
 export default function CaseDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // Find target case or fallback
-  const caseItem = mockCases.find(c => c.id === id) || mockCases[0];
-
-  const [currentStatus, setCurrentStatus] = useState(caseItem.status);
+  const [caseItem, setCaseItem] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [currentStatus, setCurrentStatus] = useState('pending');
   const [decision, setDecision] = useState('confirm'); // 'confirm' | 'modify' | 'reject'
-  const [verifiedDisease, setVerifiedDisease] = useState(caseItem.disease);
+  const [verifiedDisease, setVerifiedDisease] = useState('');
   const [officerNotes, setOfficerNotes] = useState(
     'Field symptoms match typical blast lesions. Spore count accelerated by recent morning dew. Approved application of systemic fungicide.'
   );
@@ -26,19 +26,74 @@ export default function CaseDetails() {
   const [toastMessage, setToastMessage] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmitReview = (e) => {
+  useEffect(() => {
+    let isMounted = true;
+    async function loadCase() {
+      try {
+        setLoading(true);
+        const res = await casesAPI.getById(id);
+        if (isMounted && res.data) {
+          setCaseItem(res.data);
+          setCurrentStatus(res.data.status);
+          setVerifiedDisease(res.data.disease);
+          if (res.data.officerNotes) {
+            setOfficerNotes(res.data.officerNotes);
+          }
+        }
+      } catch (err) {
+        console.error('[CaseDetails] Failed to fetch case:', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    if (id) {
+      loadCase();
+    }
+  }, [id]);
+
+  const handleSubmitReview = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      setIsSubmitting(false);
-      const newStatus = decision === 'confirm' || decision === 'modify' ? 'confirmed' : 'rejected';
-      setCurrentStatus(newStatus);
+    try {
+      const res = await casesAPI.review(id, {
+        decision,
+        verifiedDisease,
+        officerNotes,
+        scheduleVisit,
+        visitDate,
+      });
+
+      if (res.data?.case) {
+        setCaseItem(res.data.case);
+        setCurrentStatus(res.data.case.status);
+      }
+
       setToastMessage(
         `Case verified as "${verifiedDisease}". Decision recorded and fed back into the AgroGuard AI model network.`
       );
-    }, 600);
+    } catch (err) {
+      setToastMessage(err.message || 'Failed to submit review. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  if (loading) {
+    return <Loading fullPage message="Loading case details & AI telemetry..." />;
+  }
+
+  if (!caseItem) {
+    return (
+      <div className="p-8 text-center space-y-3">
+        <p className="text-gray-600 font-semibold">Case record not found.</p>
+        <button onClick={() => navigate('/officer')} className="px-4 py-2 bg-emerald-700 text-white text-xs rounded-xl font-bold">
+          Return to Dashboard
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

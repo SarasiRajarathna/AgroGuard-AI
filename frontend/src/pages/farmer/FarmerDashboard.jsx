@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiPlus, FiAlertTriangle, FiCheckCircle, FiClock, FiCloudRain, FiThermometer, FiDroplet, FiMapPin, FiFilter } from 'react-icons/fi';
 import { RiLeafLine, RiShieldCrossLine, RiRadarLine } from 'react-icons/ri';
@@ -6,29 +6,75 @@ import PageHeader from '../../components/PageHeader';
 import StatCard from '../../components/StatCard';
 import DiseaseCard from '../../components/DiseaseCard';
 import EmptyState from '../../components/EmptyState';
-import { mockCases, mockOutbreaks } from '../../services/api';
+import Loading from '../../components/Loading';
+import { casesAPI, adminAPI, weatherAPI, alertsAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
 export default function FarmerDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [filter, setFilter] = useState('all');
+  const [cases, setCases] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [weather, setWeather] = useState(null);
+  const [activeAlert, setActiveAlert] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Filter cases for the farmer
-  const farmerCases = mockCases.filter(c => filter === 'all' || c.status === filter);
-  
-  // Calculate farmer metrics
-  const total = mockCases.length;
-  const confirmed = mockCases.filter(c => c.status === 'confirmed').length;
-  const pending = mockCases.filter(c => c.status === 'pending' || c.status === 'escalated').length;
-  const highRisk = mockCases.filter(c => c.spreadRisk >= 70).length;
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadDashboardData() {
+      try {
+        setLoading(true);
+        const [casesRes, statsRes, weatherRes, alertsRes] = await Promise.all([
+          casesAPI.getAll({ role: 'farmer' }).catch(() => ({ data: [] })),
+          adminAPI.getStats('farmer').catch(() => ({ data: null })),
+          weatherAPI.getCurrent(user?.farmLocation || 'Ampara').catch(() => ({ data: null })),
+          alertsAPI.getActive().catch(() => ({ data: [] })),
+        ]);
+
+        if (isMounted) {
+          if (casesRes.data) setCases(casesRes.data);
+          if (statsRes.data) setStats(statsRes.data);
+          if (weatherRes.data) setWeather(weatherRes.data);
+          if (alertsRes.data && alertsRes.data.length > 0) {
+            setActiveAlert(alertsRes.data[0]);
+          }
+        }
+      } catch (err) {
+        console.error('[FarmerDashboard] Failed to fetch dashboard data:', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    loadDashboardData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user]);
+
+  // Filter cases for current farmer tab
+  const farmerCases = cases.filter(c => filter === 'all' || c.status === filter);
+
+  // Compute metrics from real cases if backend stats not loaded yet
+  const total = stats?.totalCases ?? cases.length;
+  const confirmed = stats?.confirmedCases ?? cases.filter(c => c.status === 'confirmed').length;
+  const pending = stats?.activeCases ?? cases.filter(c => c.status === 'pending' || c.status === 'escalated').length;
+  const highRisk = stats?.highRisk ?? cases.filter(c => c.spreadRisk >= 70).length;
+
+  const currentTemp = weather?.current?.temp ?? 28.4;
+  const currentHumidity = weather?.current?.humidity ?? 87;
+  const currentRain = weather?.current?.rainfall ?? 14;
+  const forecastText = weather?.forecastIndex ?? 'Elevated';
 
   return (
     <div className="space-y-6">
       {/* Page Header */}
       <PageHeader
         title={`Ayubowan, ${user?.name?.split(' ')[0] || 'Ruwan'}`}
-        subtitle={`Farm: ${user?.farmLocation || 'Ampara, Eastern Province'} • Real-time Crop Protection Overview`}
+        subtitle={`Farm: ${user?.farmLocation || user?.location || 'Ampara, Eastern Province'} • Real-time Crop Protection Overview`}
         action={
           <button
             onClick={() => navigate('/farmer/new-case')}
@@ -51,13 +97,15 @@ export default function FarmerDashboard() {
               <span className="text-xs font-bold uppercase tracking-wider text-amber-900 bg-amber-200/80 px-2 py-0.5 rounded">
                 Active Regional Alert
               </span>
-              <span className="text-xs text-amber-800 font-medium">Eastern Province • Paddy Cluster</span>
+              <span className="text-xs text-amber-800 font-medium">
+                {activeAlert?.province || 'Eastern Province'} • {activeAlert?.cropTarget || 'Paddy Cluster'}
+              </span>
             </div>
             <h3 className="font-bold text-gray-900 text-sm md:text-base mt-1">
-              High Risk of Blast Disease Spore Spread
+              {activeAlert?.threatLevel ? `${activeAlert.threatLevel}: ` : ''}High Risk of Pathogen Spore Spread
             </h3>
             <p className="text-xs md:text-sm text-gray-600 mt-0.5">
-              Persistent humidity (88%) and 28°C temperatures favor rapid fungal propagation. 3 neighbor holdings flagged within 4.2 km.
+              {activeAlert?.message || 'Persistent humidity and optimal temperatures favor rapid fungal propagation. Holdings flagged.'}
             </p>
           </div>
         </div>
@@ -112,7 +160,7 @@ export default function FarmerDashboard() {
             <FiCloudRain className="text-blue-600" size={20} />
             <h3 className="font-bold text-gray-900 text-sm">Farm Micro-Climate Conditions & Pathogen Index</h3>
           </div>
-          <span className="text-xs text-gray-500">Live feed • Ampara Station</span>
+          <span className="text-xs text-gray-500">Live feed • {weather?.location || 'Ampara Station'}</span>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -122,7 +170,7 @@ export default function FarmerDashboard() {
             </div>
             <div>
               <p className="text-[11px] text-gray-500 font-medium">Relative Humidity</p>
-              <p className="text-lg font-bold text-gray-900">87%</p>
+              <p className="text-lg font-bold text-gray-900">{currentHumidity}%</p>
               <span className="text-[10px] text-amber-700 font-medium">High fungal viability</span>
             </div>
           </div>
@@ -133,7 +181,7 @@ export default function FarmerDashboard() {
             </div>
             <div>
               <p className="text-[11px] text-gray-500 font-medium">Surface Temp</p>
-              <p className="text-lg font-bold text-gray-900">28.4°C</p>
+              <p className="text-lg font-bold text-gray-900">{currentTemp}°C</p>
               <span className="text-[10px] text-emerald-700 font-medium">Optimal vegetative</span>
             </div>
           </div>
@@ -144,7 +192,7 @@ export default function FarmerDashboard() {
             </div>
             <div>
               <p className="text-[11px] text-gray-500 font-medium">Expected Rain</p>
-              <p className="text-lg font-bold text-gray-900">14 mm</p>
+              <p className="text-lg font-bold text-gray-900">{currentRain} mm</p>
               <span className="text-[10px] text-blue-700 font-medium">Leaf wetness 6+ hrs</span>
             </div>
           </div>
@@ -155,7 +203,7 @@ export default function FarmerDashboard() {
             </div>
             <div>
               <p className="text-[11px] text-gray-500 font-medium">Infection Forecast</p>
-              <p className="text-lg font-bold text-purple-900">Elevated</p>
+              <p className="text-lg font-bold text-purple-900">{forecastText}</p>
               <span className="text-[10px] text-purple-700 font-medium">Blast & Blight Watch</span>
             </div>
           </div>
@@ -188,7 +236,9 @@ export default function FarmerDashboard() {
           </div>
         </div>
 
-        {farmerCases.length > 0 ? (
+        {loading ? (
+          <Loading message="Loading crop diagnoses..." />
+        ) : farmerCases.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {farmerCases.map((c) => (
               <DiseaseCard

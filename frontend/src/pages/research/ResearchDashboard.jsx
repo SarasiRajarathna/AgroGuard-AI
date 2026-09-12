@@ -1,26 +1,67 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FiDownload, FiBarChart2, FiActivity, FiMapPin, FiCalendar, FiFilter, FiTrendingUp, FiCloudRain, FiShield } from 'react-icons/fi';
 import { RiRadarLine, RiLeafLine, RiPulseLine } from 'react-icons/ri';
 import PageHeader from '../../components/PageHeader';
 import StatCard from '../../components/StatCard';
 import Toast from '../../components/Toast';
-import { mockOutbreaks, mockCases } from '../../services/api';
+import Loading from '../../components/Loading';
+import { outbreaksAPI, adminAPI } from '../../services/api';
 
 export default function ResearchDashboard() {
   const [toastMessage, setToastMessage] = useState(null);
   const [selectedProvince, setSelectedProvince] = useState('all');
+  const [provinces, setProvinces] = useState([]);
+  const [trends, setTrends] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const provinces = [
-    { name: 'Eastern Province', cases: 84, risk: 'Critical', activeDisease: 'Paddy Blast', farmsAtRisk: 140, color: 'bg-red-500' },
-    { name: 'Central Province', cases: 42, risk: 'High', activeDisease: 'Tea Blister Blight', farmsAtRisk: 75, color: 'bg-orange-500' },
-    { name: 'North Central', cases: 61, risk: 'High', activeDisease: 'Sheath Blight', farmsAtRisk: 110, color: 'bg-amber-500' },
-    { name: 'North Western', cases: 29, risk: 'Moderate', activeDisease: 'Bacterial Wilt', farmsAtRisk: 45, color: 'bg-yellow-500' },
-    { name: 'Western Province', cases: 14, risk: 'Low', activeDisease: 'Powdery Mildew', farmsAtRisk: 20, color: 'bg-emerald-500' },
-    { name: 'Southern Province', cases: 18, risk: 'Low', activeDisease: 'Cinnamon Stripe', farmsAtRisk: 28, color: 'bg-emerald-500' },
-  ];
+  useEffect(() => {
+    let isMounted = true;
+    async function loadResearchData() {
+      try {
+        setLoading(true);
+        const [provRes, trendsRes, statsRes] = await Promise.all([
+          outbreaksAPI.getProvinces().catch(() => ({ data: [] })),
+          outbreaksAPI.getTrends().catch(() => ({ data: [] })),
+          adminAPI.getStats('research').catch(() => ({ data: null })),
+        ]);
 
-  const handleExport = () => {
-    setToastMessage('Exporting Epidemiological Surveillance Report (GeoJSON & CSV)...');
+        if (isMounted) {
+          if (provRes.data && provRes.data.length > 0) setProvinces(provRes.data);
+          if (trendsRes.data && trendsRes.data.length > 0) setTrends(trendsRes.data);
+          if (statsRes.data) setStats(statsRes.data);
+        }
+      } catch (err) {
+        console.error('[ResearchDashboard] Failed to load data:', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    loadResearchData();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const handleExport = async () => {
+    try {
+      setToastMessage('Exporting Epidemiological Surveillance Dataset...');
+      const res = await outbreaksAPI.exportData();
+      const exportJson = JSON.stringify(res.data || res, null, 2);
+      const blob = new Blob([exportJson], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `agroguard-surveillance-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      setToastMessage('Surveillance report downloaded successfully (JSON dataset).');
+    } catch (err) {
+      setToastMessage(err.message || 'Export failed. Please try again.');
+    }
   };
 
   return (

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FiUsers, FiShield, FiAlertTriangle, FiCheckCircle, FiPlus, FiSend, FiSearch, FiServer, FiRadio, FiActivity } from 'react-icons/fi';
 import { RiShieldKeyholeLine, RiBroadcastLine, RiCpuLine } from 'react-icons/ri';
 import PageHeader from '../../components/PageHeader';
@@ -6,11 +6,17 @@ import StatCard from '../../components/StatCard';
 import Modal from '../../components/Modal';
 import Toast from '../../components/Toast';
 import StatusBadge from '../../components/StatusBadge';
+import Loading from '../../components/Loading';
+import { adminAPI, alertsAPI } from '../../services/api';
 
 export default function AdminDashboard() {
   const [toastMessage, setToastMessage] = useState(null);
   const [broadcastModalOpen, setBroadcastModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [users, setUsers] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [health, setHealth] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   // Broadcast form state
   const [province, setProvince] = useState('Eastern Province');
@@ -20,25 +26,56 @@ export default function AdminDashboard() {
     'ALERT: Blast disease spore count elevated in Eastern Province. Inspect fields immediately & drain excess standing water.'
   );
 
-  const [users, setUsers] = useState([
-    { id: 1, name: 'Ruwan Perera', email: 'ruwan@farm.lk', role: 'Farmer', location: 'Ampara', status: 'Active', cases: 14 },
-    { id: 2, name: 'Dr. Anura Bandara', email: 'anura@agridept.gov.lk', role: 'Agri Officer', location: 'Batticaloa & Ampara', status: 'Active', cases: 48 },
-    { id: 3, name: 'Prof. Dhammika Silva', email: 'dhammika@cri.lk', role: 'Research Officer', location: 'Peradeniya CRI', status: 'Active', cases: 120 },
-    { id: 4, name: 'Kusum Wickramasinghe', email: 'kusum@farm.lk', role: 'Farmer', location: 'Polonnaruwa', status: 'Active', cases: 6 },
-    { id: 5, name: 'S. Thevarajah', email: 'thevarajah@agri.gov.lk', role: 'Agri Officer', location: 'Jaffna', status: 'Active', cases: 31 },
-  ]);
+  useEffect(() => {
+    let isMounted = true;
+    async function loadAdminData() {
+      try {
+        setLoading(true);
+        const [usersRes, statsRes, healthRes] = await Promise.all([
+          adminAPI.getUsers().catch(() => ({ data: [] })),
+          adminAPI.getStats('admin').catch(() => ({ data: null })),
+          adminAPI.getSystemHealth().catch(() => ({ data: null })),
+        ]);
 
-  const handleSendBroadcast = (e) => {
+        if (isMounted) {
+          if (usersRes.data) setUsers(usersRes.data);
+          if (statsRes.data) setStats(statsRes.data);
+          if (healthRes.data) setHealth(healthRes.data);
+        }
+      } catch (err) {
+        console.error('[AdminDashboard] Failed to load data:', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    loadAdminData();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const handleSendBroadcast = async (e) => {
     e.preventDefault();
-    setBroadcastModalOpen(false);
-    setToastMessage(`Early Warning SMS & Push Broadcast successfully transmitted to 340 farmers in ${province}!`);
+    try {
+      await alertsAPI.broadcast({
+        province,
+        threatLevel,
+        cropTarget,
+        broadcastMessage,
+      });
+      setBroadcastModalOpen(false);
+      setToastMessage(`Early Warning SMS & Push Broadcast successfully transmitted to registered stakeholders in ${province}!`);
+    } catch (err) {
+      setToastMessage(err.message || 'Failed to dispatch broadcast alert.');
+    }
   };
 
   const filteredUsers = users.filter(u =>
-    u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    u.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    u.location.toLowerCase().includes(searchTerm.toLowerCase())
+    u.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    u.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    u.role?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (u.location && u.location.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return (

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { FiUploadCloud, FiImage, FiMapPin, FiInfo, FiCheck, FiArrowRight, FiArrowLeft, FiAlertCircle, FiCpu } from 'react-icons/fi';
 import { RiLeafLine, RiRadarLine, RiPulseLine } from 'react-icons/ri';
 import PageHeader from '../../components/PageHeader';
+import Toast from '../../components/Toast';
+import { casesAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
 export default function NewCase() {
@@ -65,35 +67,67 @@ export default function NewCase() {
     }
   };
 
-  const handleStartAnalysis = () => {
+  const [errorMessage, setErrorMessage] = useState(null);
+
+  const handleStartAnalysis = async () => {
     setAnalyzing(true);
+    setErrorMessage(null);
     setAnalysisProgress(15);
     setAnalysisStage('Extracting leaf pathology features...');
 
-    setTimeout(() => {
+    const timer1 = setTimeout(() => {
       setAnalysisProgress(40);
       setAnalysisStage('Matching fungal / bacterial lesion patterns in Gemini Vision Model...');
-    }, 900);
+    }, 800);
 
-    setTimeout(() => {
+    const timer2 = setTimeout(() => {
       setAnalysisProgress(70);
       setAnalysisStage('Correlating micro-weather telemetry & local outbreak vectors...');
-    }, 1800);
+    }, 1600);
 
-    setTimeout(() => {
+    const timer3 = setTimeout(() => {
       setAnalysisProgress(95);
       setAnalysisStage('Synthesizing epidemiological risk & agronomic treatment plan...');
-    }, 2600);
+    }, 2400);
 
-    setTimeout(() => {
+    try {
+      const payload = {
+        cropType,
+        variety,
+        location,
+        fieldArea,
+        cropStage,
+        symptoms,
+        imageUrl: imagePreview,
+      };
+
+      const res = await casesAPI.create(payload);
+
+      // Wait a moment for final animation polish
+      setTimeout(() => {
+        setAnalyzing(false);
+        const createdId = res.data?.id || 'CASE-001';
+        navigate(`/farmer/diagnosis/${createdId}`);
+      }, 2900);
+    } catch (err) {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
       setAnalyzing(false);
-      // Navigate to diagnosis result with case ID
-      navigate('/farmer/diagnosis/CASE-001');
-    }, 3400);
+      setErrorMessage(err.message || 'Failed to submit case for AI diagnosis. Please try again.');
+    }
   };
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      {errorMessage && (
+        <Toast
+          message={errorMessage}
+          type="error"
+          onClose={() => setErrorMessage(null)}
+        />
+      )}
+
       <PageHeader
         title="AI Crop Disease Diagnosis"
         subtitle="Submit clear photos of affected foliage to receive instant pathogen identification, environmental risk assessment, and treatment guidelines."

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiCalendar, FiMapPin, FiPhone, FiCheck, FiPlus, FiClock, FiArrowRight, FiCheckCircle } from 'react-icons/fi';
 import { RiTruckLine, RiLeafLine } from 'react-icons/ri';
@@ -6,11 +6,13 @@ import PageHeader from '../../components/PageHeader';
 import StatusBadge from '../../components/StatusBadge';
 import Modal from '../../components/Modal';
 import Toast from '../../components/Toast';
-import { mockVisits, mockCases } from '../../services/api';
+import Loading from '../../components/Loading';
+import { visitsAPI } from '../../services/api';
 
 export default function FieldVisit() {
   const navigate = useNavigate();
-  const [visits, setVisits] = useState(mockVisits);
+  const [visits, setVisits] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
 
@@ -21,25 +23,51 @@ export default function FieldVisit() {
   const [date, setDate] = useState('2026-09-15');
   const [notes, setNotes] = useState('Routine inspection of spore eradication');
 
-  const handleMarkCompleted = (visitId) => {
-    setVisits(visits.map(v => v.id === visitId ? { ...v, status: 'completed' } : v));
-    setToastMessage('Field visit marked as successfully completed and report filed.');
+  const loadVisits = async () => {
+    try {
+      setLoading(true);
+      const res = await visitsAPI.getAll();
+      if (res.data) setVisits(res.data);
+    } catch (err) {
+      console.error('[FieldVisit] Failed to load visits:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleCreateVisit = (e) => {
+  useEffect(() => {
+    loadVisits();
+  }, []);
+
+  const handleMarkCompleted = async (visitId) => {
+    try {
+      await visitsAPI.updateStatus(visitId, 'completed');
+      setVisits(visits.map(v => v.id === visitId ? { ...v, status: 'completed' } : v));
+      setToastMessage('Field visit marked as successfully completed and report filed.');
+    } catch (err) {
+      setToastMessage(err.message || 'Failed to update visit status.');
+    }
+  };
+
+  const handleCreateVisit = async (e) => {
     e.preventDefault();
-    const newVisit = {
-      id: `VISIT-00${visits.length + 1}`,
-      farmerName,
-      location,
-      cropType,
-      scheduledDate: date,
-      status: 'scheduled',
-      notes,
-    };
-    setVisits([newVisit, ...visits]);
-    setIsModalOpen(false);
-    setToastMessage(`New field inspection scheduled for ${farmerName} on ${date}.`);
+    try {
+      const res = await visitsAPI.create({
+        farmerName,
+        location,
+        cropType,
+        scheduledDate: date,
+        notes,
+      });
+
+      if (res.data) {
+        setVisits([res.data, ...visits]);
+      }
+      setIsModalOpen(false);
+      setToastMessage(`New field inspection scheduled for ${farmerName} on ${date}.`);
+    } catch (err) {
+      setToastMessage(err.message || 'Failed to schedule visit.');
+    }
   };
 
   return (
@@ -104,8 +132,11 @@ export default function FieldVisit() {
       </div>
 
       {/* Visits List */}
-      <div className="space-y-3">
-        {visits.map((visit) => (
+      {loading ? (
+        <Loading message="Loading scheduled extension visits..." />
+      ) : (
+        <div className="space-y-3">
+          {visits.map((visit) => (
           <div
             key={visit.id}
             className="bg-white rounded-2xl border border-gray-200 p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-emerald-200 transition-colors"
@@ -158,7 +189,8 @@ export default function FieldVisit() {
             </div>
           </div>
         ))}
-      </div>
+        </div>
+      )}
 
       {/* Schedule Visit Modal */}
       <Modal

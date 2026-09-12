@@ -7,9 +7,9 @@ import { notificationsAPI } from '../services/api';
 
 const roleTheme = {
   farmer: { label: 'Farmer', bg: 'bg-green-100', text: 'text-green-800', dot: 'bg-green-500' },
-  officer: { label: 'Officer', bg: 'bg-blue-100', text: 'text-blue-800', dot: 'bg-blue-500' },
-  research: { label: 'Researcher', bg: 'bg-purple-100', text: 'text-purple-800', dot: 'bg-purple-500' },
-  admin: { label: 'Admin', bg: 'bg-gray-100', text: 'text-gray-800', dot: 'bg-gray-500' },
+  officer: { label: 'Officer', bg: 'bg-green-100', text: 'text-green-800', dot: 'bg-green-500' },
+  research: { label: 'Researcher', bg: 'bg-green-100', text: 'text-green-800', dot: 'bg-green-500' },
+  admin: { label: 'Admin', bg: 'bg-green-100', text: 'text-green-800', dot: 'bg-green-500' },
 };
 
 export default function Navbar({ setIsOpen }) {
@@ -96,9 +96,8 @@ export default function Navbar({ setIsOpen }) {
                 {notifications.map(n => (
                   <div key={n.id} className="p-3 hover:bg-gray-50 transition-colors cursor-pointer">
                     <div className="flex items-start gap-3">
-                      <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${
-                        n.type === 'alert' ? 'bg-red-500' : n.type === 'success' ? 'bg-green-500' : 'bg-blue-500'
-                      }`} />
+                      <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${n.type === 'alert' ? 'bg-red-500' : n.type === 'success' ? 'bg-green-500' : 'bg-blue-500'
+                        }`} />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm text-gray-800 leading-snug">{n.text}</p>
                         <p className="text-xs text-gray-400 mt-0.5">{n.time}</p>

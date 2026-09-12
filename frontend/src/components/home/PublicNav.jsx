@@ -75,7 +75,7 @@ export default function PublicNav() {
         }
         .pub-nav-links a {
           text-decoration: none;
-          color: #374151;
+          color: white;
           font-size: 0.925rem;
           font-weight: 500;
           padding: 0.5rem 0.85rem;
@@ -193,8 +193,8 @@ export default function PublicNav() {
           </ul>
 
           <div className="pub-nav-actions">
-            <Link to="/login" className="btn-nav-ghost">Sign In</Link>
-            <Link to="/login" className="btn-nav-primary">Get Started</Link>
+            <Link to="/login" className="btn-nav-ghost">Login</Link>
+            <Link to="/register" className="btn-nav-primary">Sign In</Link>
           </div>
 
           <button
@@ -217,8 +217,8 @@ export default function PublicNav() {
             </a>
           ))}
           <div className="pub-nav-mobile-actions">
-            <Link to="/login" className="btn-nav-ghost" onClick={() => setMenuOpen(false)}>Sign In</Link>
-            <Link to="/login" className="btn-nav-primary" onClick={() => setMenuOpen(false)}>Get Started</Link>
+            <Link to="/login" className="btn-nav-ghost" onClick={() => setMenuOpen(false)}>Login</Link>
+            <Link to="/register" className="btn-nav-primary" onClick={() => setMenuOpen(false)}>Sign In</Link>
           </div>
         </div>
       </nav>

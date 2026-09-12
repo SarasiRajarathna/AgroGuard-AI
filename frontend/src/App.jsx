@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { LanguageProvider } from './context/LanguageContext';
 import Layout from './components/Layout';
 
 // Pages
@@ -34,8 +35,9 @@ function RootRedirect() {
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
+      <LanguageProvider>
+        <BrowserRouter>
+          <Routes>
           {/* Public Authentication Route */}
           <Route path="/login" element={<Login />} />
 
@@ -222,6 +224,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>
-    </AuthProvider>
+    </LanguageProvider>
+  </AuthProvider>
   );
 }

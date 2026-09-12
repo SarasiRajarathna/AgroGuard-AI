@@ -241,17 +241,44 @@ async function getProvincesRiskData() {
   });
 }
 
-const MONTHLY_TRAJECTORY = [
-  { month: 'Apr', blast: 40, blight: 25, sheath: 15 },
-  { month: 'May', blast: 55, blight: 35, sheath: 28 },
-  { month: 'Jun', blast: 70, blight: 50, sheath: 42 },
-  { month: 'Jul', blast: 85, blight: 40, sheath: 60 },
-  { month: 'Aug', blast: 95, blight: 65, sheath: 45 },
-  { month: 'Sep (Now)', blast: 112, blight: 55, sheath: 70 },
-];
+async function getMonthlyTrajectory() {
+  const cases = await dbService.getCases();
+  const now = new Date();
+  const months = [];
 
-function getMonthlyTrajectory() {
-  return MONTHLY_TRAJECTORY;
+  for (let offset = 5; offset >= 0; offset -= 1) {
+    const date = new Date(now.getFullYear(), now.getMonth() - offset, 1);
+    months.push({
+      year: date.getFullYear(),
+      monthIndex: date.getMonth(),
+      month: date.toLocaleString('en-US', { month: 'short' }),
+      blast: 0,
+      blight: 0,
+      sheath: 0,
+      other: 0,
+    });
+  }
+
+  cases.forEach((cropCase) => {
+    const submittedAt = new Date(cropCase.submittedAt || cropCase.createdAt);
+    if (Number.isNaN(submittedAt.getTime())) return;
+
+    const bucket = months.find(
+      (item) => item.year === submittedAt.getFullYear() && item.monthIndex === submittedAt.getMonth()
+    );
+    if (!bucket) return;
+
+    const disease = `${cropCase.disease || ''}`.toLowerCase();
+    if (disease.includes('blast')) bucket.blast += 1;
+    else if (disease.includes('blight')) bucket.blight += 1;
+    else if (disease.includes('sheath')) bucket.sheath += 1;
+    else bucket.other += 1;
+  });
+
+  return months.map(({ year, monthIndex, ...trend }) => ({
+    ...trend,
+    total: trend.blast + trend.blight + trend.sheath + trend.other,
+  }));
 }
 
 module.exports = {

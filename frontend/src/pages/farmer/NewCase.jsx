@@ -46,8 +46,8 @@ export default function NewCase() {
           setSelectedFarmId(firstFarm.id);
           setLatitude(firstFarm.latitude);
           setLongitude(firstFarm.longitude);
-          setLocation(firstFarm.location);
-          if (firstFarm.cropType) setCropType(firstFarm.cropType);
+          setLocation(firstFarm.location || [firstFarm.district, firstFarm.province].filter(Boolean).join(', ') || 'Ampara, Eastern Province');
+          if (firstFarm.crop) setCropType(firstFarm.crop);
         }
       } catch (err) {
         console.warn('Could not load farms list:', err.message);
@@ -62,8 +62,8 @@ export default function NewCase() {
     if (farm) {
       setLatitude(farm.latitude);
       setLongitude(farm.longitude);
-      setLocation(farm.location);
-      if (farm.cropType) setCropType(farm.cropType);
+      setLocation(farm.location || [farm.district, farm.province].filter(Boolean).join(', ') || 'Ampara, Eastern Province');
+      if (farm.crop) setCropType(farm.crop);
     }
   };
 
@@ -126,6 +126,14 @@ export default function NewCase() {
   const [errorMessage, setErrorMessage] = useState(null);
 
   const handleStartAnalysis = async () => {
+    const normalizedCropType = cropType?.trim();
+    const normalizedLocation = location?.trim();
+    if (!normalizedCropType || !normalizedLocation) {
+      setErrorMessage('Please enter both a crop type and a farm location before starting the AI diagnosis.');
+      setStep(1);
+      return;
+    }
+
     setAnalyzing(true);
     setErrorMessage(null);
     setAnalysisProgress(15);
@@ -148,9 +156,9 @@ export default function NewCase() {
 
     try {
       const payload = {
-        cropType,
+        cropType: normalizedCropType,
         variety,
-        location,
+        location: normalizedLocation,
         latitude: parseFloat(latitude),
         longitude: parseFloat(longitude),
         farmId: selectedFarmId ? Number(selectedFarmId) : null,
@@ -166,7 +174,11 @@ export default function NewCase() {
 
       setTimeout(() => {
         setAnalyzing(false);
-        const createdId = res.data?.id || '1';
+        const createdId = res?.data?.id || res?.id;
+        if (!createdId) {
+          setErrorMessage('AI diagnosis completed, but the created case ID was not returned. Please check your cases list.');
+          return;
+        }
         navigate(`/farmer/diagnosis/${createdId}`);
       }, 2900);
     } catch (err) {
@@ -282,7 +294,7 @@ export default function NewCase() {
                 >
                   {farms.map((f) => (
                     <option key={f.id} value={f.id}>
-                      🏡 {f.name} — {f.location} ({f.cropType || 'Paddy'}, {f.acreage || 1} ac) [Lat: {f.latitude}, Lng: {f.longitude}]
+                      🏡 {f.farmName || 'Registered farm'} — {[f.district, f.province].filter(Boolean).join(', ') || 'Location not specified'} ({f.crop || 'Paddy'}, {f.area || '1.0 acre'}) [Lat: {f.latitude}, Lng: {f.longitude}]
                     </option>
                   ))}
                 </select>

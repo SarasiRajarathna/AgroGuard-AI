@@ -48,7 +48,7 @@ async function getProvincesRisk(req, res, next) {
 // GET /api/outbreaks/trends
 async function getMonthlyTrends(req, res, next) {
   try {
-    const trends = getMonthlyTrajectory();
+    const trends = await getMonthlyTrajectory();
     return res.status(200).json({
       success: true,
       data: trends,

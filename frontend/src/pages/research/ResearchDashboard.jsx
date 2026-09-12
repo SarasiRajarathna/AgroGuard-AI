@@ -9,7 +9,7 @@ import RegionalMap from '../../components/RegionalMap';
 import { outbreaksAPI, adminAPI, casesAPI, farmsAPI } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 
-export default function ResearchDashboard() {
+export default function ResearchDashboard({ view = 'dashboard' }) {
   const { t } = useLanguage();
   const [toastMessage, setToastMessage] = useState(null);
   const [selectedProvince, setSelectedProvince] = useState('all');
@@ -95,6 +95,101 @@ export default function ResearchDashboard() {
       setToastMessage(err.message || 'Export failed. Please try again.');
     }
   };
+
+  if (view !== 'dashboard') {
+    const isOutbreakView = view === 'outbreaks';
+    return (
+      <div className="space-y-6">
+        {toastMessage && (
+          <Toast
+            message={toastMessage}
+            type="info"
+            onClose={() => setToastMessage(null)}
+          />
+        )}
+
+        <PageHeader
+          title={isOutbreakView ? 'Outbreak Map' : 'Analytics'}
+          subtitle={
+            isOutbreakView
+              ? 'Review active pathogen clusters and coordinate containment alerts.'
+              : 'Analyze crop disease trends, monitored cases, and regional risk indicators.'
+          }
+          action={
+            <button
+              onClick={handleExport}
+              className="flex items-center gap-2 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-semibold shadow-xs transition-all"
+            >
+              <FiDownload size={16} />
+              <span>{t('exportDataset')}</span>
+            </button>
+          }
+        />
+
+        {loading ? (
+          <Loading fullPage message="Loading research data..." />
+        ) : isOutbreakView ? (
+          <>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {outbreaks.map((outbreak) => (
+                <div key={outbreak.id} className="bg-white rounded-2xl border border-gray-200 p-5 shadow-xs">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-mono text-red-600 font-bold">CLUSTER #{outbreak.id}</p>
+                      <h3 className="mt-1 text-lg font-bold text-gray-900">{outbreak.disease}</h3>
+                      <p className="text-xs text-gray-500">{outbreak.crop} · {outbreak.location}</p>
+                    </div>
+                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-red-100 text-red-800">
+                      {outbreak.status || 'active'}
+                    </span>
+                  </div>
+                  <div className="mt-4 grid grid-cols-2 gap-2 text-xs text-gray-600">
+                    <span>Cases: <strong>{outbreak.caseCount || outbreak.activeCases || 0}</strong></span>
+                    <span>Radius: <strong>{outbreak.radiusKm || 10} km</strong></span>
+                    <span>Severity: <strong className="uppercase">{outbreak.severity || 'unknown'}</strong></span>
+                    <span>Risk: <strong>{outbreak.risk || 'Elevated'}</strong></span>
+                  </div>
+                  {outbreak.status !== 'confirmed' && (
+                    <button
+                      disabled={confirmingId === outbreak.id}
+                      onClick={() => handleConfirmOutbreak(outbreak.id)}
+                      className="mt-4 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold"
+                    >
+                      {confirmingId === outbreak.id ? 'Dispatching...' : 'Confirm and alert farms'}
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+            <RegionalMap cases={cases} farms={farms} outbreaks={outbreaks} center={[7.2833, 81.6667]} zoom={9} height="460px" />
+          </>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <StatCard title="Monitored cases" value={String(cases.length)} icon={RiPulseLine} iconBg="bg-blue-50 text-blue-600" />
+            <StatCard title="Active clusters" value={String(outbreaks.length)} icon={RiRadarLine} iconBg="bg-rose-50 text-rose-600" />
+            <StatCard title="Sentinel farms" value={String(farms.length)} icon={FiShield} iconBg="bg-emerald-50 text-emerald-600" />
+            <div className="md:col-span-3 bg-white rounded-2xl border border-gray-200 p-6 shadow-xs">
+              <h3 className="font-bold text-gray-900">Regional trend analysis</h3>
+              <p className="mt-1 text-xs text-gray-500">Recent surveillance trend records</p>
+              <div className="mt-4 space-y-2">
+                {trends.length > 0 ? trends.map((trend, index) => (
+                  <div key={trend.id || trend.month || index} className="flex items-center justify-between border-b border-gray-100 py-2 text-sm">
+                    <span>{trend.month || trend.label || trend.date || `Period ${index + 1}`}</span>
+                    <span className="flex gap-4 text-xs">
+                      <strong className="text-rose-700">Blast: {trend.blast ?? 0}</strong>
+                      <strong className="text-orange-700">Blight: {trend.blight ?? 0}</strong>
+                      <strong className="text-amber-700">Sheath: {trend.sheath ?? 0}</strong>
+                      <strong className="text-gray-900">Total: {trend.total ?? trend.value ?? trend.cases ?? 0}</strong>
+                    </span>
+                  </div>
+                )) : <p className="text-sm text-gray-500">No trend data available yet.</p>}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

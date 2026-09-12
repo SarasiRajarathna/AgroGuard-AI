@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext';
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
-  
+
   const [role, setRole] = useState('farmer');
   const [email, setEmail] = useState('ruwan@farm.lk');
   const [password, setPassword] = useState('password123');
@@ -134,11 +134,10 @@ export default function Login() {
                   type="button"
                   key={item.id}
                   onClick={() => handleRoleSelect(item.id)}
-                  className={`flex items-center gap-2 p-2.5 rounded-xl border text-xs font-semibold transition-all ${
-                    role === item.id
+                  className={`flex items-center gap-2 p-2.5 rounded-xl border text-xs font-semibold transition-all ${role === item.id
                       ? 'bg-emerald-50 border-emerald-500 text-emerald-800 shadow-xs ring-1 ring-emerald-400'
                       : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                  }`}
+                    }`}
                 >
                   <span className="text-base">{item.icon}</span>
                   <div className="text-left leading-tight">

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import logoSrc from '../../assets/Logo.jpg';
 
 export default function PublicNav() {
   const [scrolled, setScrolled] = useState(false);
@@ -13,11 +12,19 @@ export default function PublicNav() {
   }, []);
 
   const navLinks = [
+    { label: 'Home', href: '#home' },
     { label: 'Features', href: '#features' },
     { label: 'How It Works', href: '#how-it-works' },
     { label: 'About', href: '#about' },
     { label: 'Contact', href: '#contact' },
   ];
+
+  const handleLinkClick = (e, href) => {
+    if (href === '#home') {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   return (
     <>
@@ -30,7 +37,7 @@ export default function PublicNav() {
           padding: 1.25rem 0;
         }
         .pub-nav.scrolled {
-          background: rgba(255, 255, 255, 0.92);
+          background: rgba(255, 255, 255, 0.95);
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
           box-shadow: 0 1px 24px rgba(27, 94, 32, 0.10);
@@ -47,14 +54,29 @@ export default function PublicNav() {
         .pub-nav-logo {
           display: flex;
           align-items: center;
-          gap: 0.6rem;
+          gap: 0.75rem;
           text-decoration: none;
         }
-        .pub-nav-logo img {
-          width: 38px;
-          height: 38px;
-          object-fit: contain;
-          border-radius: 8px;
+        .pub-nav-logo-badge {
+          width: 40px;
+          height: 40px;
+          background: #ffffff;
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+          border: 1px solid rgba(232, 245, 233, 0.8);
+          flex-shrink: 0;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .pub-nav-logo:hover .pub-nav-logo-badge {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 14px rgba(27, 94, 32, 0.2);
+        }
+        .pub-nav-logo-svg {
+          width: 24px;
+          height: 24px;
         }
         .pub-nav-logo-text {
           font-size: 1.25rem;
@@ -82,7 +104,11 @@ export default function PublicNav() {
           border-radius: 8px;
           transition: background 0.2s, color 0.2s;
         }
-        .pub-nav-links a:hover {
+        .pub-nav.scrolled .pub-nav-links a {
+          color: #374151;
+        }
+        .pub-nav-links a:hover,
+        .pub-nav.scrolled .pub-nav-links a:hover {
           background: #E8F5E9;
           color: #1B5E20;
         }
@@ -99,6 +125,7 @@ export default function PublicNav() {
           padding: 0.5rem 1.1rem;
           border-radius: 8px;
           border: 1.5px solid #1B5E20;
+          background: #ffffff;
           transition: background 0.2s, color 0.2s;
         }
         .btn-nav-ghost:hover {
@@ -124,14 +151,16 @@ export default function PublicNav() {
           display: none;
           flex-direction: column;
           gap: 5px;
-          background: none;
-          border: none;
+          background: #ffffff;
+          border: 1px solid #E8F5E9;
+          border-radius: 8px;
           cursor: pointer;
-          padding: 4px;
+          padding: 8px;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.08);
         }
         .pub-nav-hamburger span {
           display: block;
-          width: 24px;
+          width: 22px;
           height: 2px;
           background: #1B5E20;
           border-radius: 2px;
@@ -144,7 +173,7 @@ export default function PublicNav() {
           position: absolute;
           top: 100%;
           left: 0; right: 0;
-          background: rgba(255,255,255,0.97);
+          background: rgba(255,255,255,0.98);
           backdrop-filter: blur(20px);
           padding: 1rem 2rem 1.5rem;
           border-bottom: 1px solid #E8F5E9;
@@ -179,22 +208,34 @@ export default function PublicNav() {
 
       <nav className={`pub-nav${scrolled ? ' scrolled' : ''}`}>
         <div className="pub-nav-inner">
-          <Link to="/" className="pub-nav-logo">
-            <img src={logoSrc} alt="AgroGuard AI logo" />
+          <Link to="/" className="pub-nav-logo" onClick={(e) => handleLinkClick(e, '#home')}>
+            <div className="pub-nav-logo-badge">
+              <svg className="pub-nav-logo-svg" viewBox="0 0 24 24" fill="none" stroke="#1B5E20" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M7 20h10" />
+                <path d="M10 20c5.5-2.5.8-6.4 3-10" />
+                <path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z" />
+                <path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z" />
+              </svg>
+            </div>
             <span className="pub-nav-logo-text">AgroGuard AI</span>
           </Link>
 
           <ul className="pub-nav-links">
             {navLinks.map(link => (
               <li key={link.label}>
-                <a href={link.href}>{link.label}</a>
+                <a
+                  href={link.href}
+                  onClick={(e) => handleLinkClick(e, link.href)}
+                >
+                  {link.label}
+                </a>
               </li>
             ))}
           </ul>
 
           <div className="pub-nav-actions">
             <Link to="/login" className="btn-nav-ghost">Login</Link>
-            <Link to="/register" className="btn-nav-primary">Sign In</Link>
+            <Link to="/sign-in" className="btn-nav-primary">Sign In</Link>
           </div>
 
           <button
@@ -212,13 +253,20 @@ export default function PublicNav() {
         {/* Mobile Menu */}
         <div className={`pub-nav-mobile${menuOpen ? ' open' : ''}`}>
           {navLinks.map(link => (
-            <a key={link.label} href={link.href} onClick={() => setMenuOpen(false)}>
+            <a
+              key={link.label}
+              href={link.href}
+              onClick={(e) => {
+                handleLinkClick(e, link.href);
+                setMenuOpen(false);
+              }}
+            >
               {link.label}
             </a>
           ))}
           <div className="pub-nav-mobile-actions">
             <Link to="/login" className="btn-nav-ghost" onClick={() => setMenuOpen(false)}>Login</Link>
-            <Link to="/register" className="btn-nav-primary" onClick={() => setMenuOpen(false)}>Sign In</Link>
+            <Link to="/sign-in" className="btn-nav-primary" onClick={() => setMenuOpen(false)}>Sign In</Link>
           </div>
         </div>
       </nav>

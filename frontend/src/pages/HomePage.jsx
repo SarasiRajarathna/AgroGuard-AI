@@ -1,5 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import {
+  ScanLine,
+  Radio,
+  Sprout,
+  BarChart3,
+  Users,
+  ShieldCheck,
+} from 'lucide-react';
 import PublicNav from '../components/home/PublicNav';
 import Footer from '../components/home/footer';
 import heroImage from '../assets/agriculture-hero.jpg';
@@ -22,32 +30,32 @@ function useInView(threshold = 0.15) {
 /* ─── Data ─── */
 const features = [
   {
-    icon: '🔬',
+    icon: ScanLine,
     title: 'AI Disease Detection',
     desc: 'Upload a photo of your crop and our deep-learning model identifies disease with high accuracy within seconds.',
   },
   {
-    icon: '📡',
+    icon: Radio,
     title: 'Real-Time Outbreak Alerts',
     desc: 'Geo-tagged outbreak data gives you instant regional warnings before disease spreads to your fields.',
   },
   {
-    icon: '🌿',
+    icon: Sprout,
     title: 'Treatment Recommendations',
     desc: 'Receive tailored, evidence-based treatment plans and eco-friendly pesticide suggestions instantly.',
   },
   {
-    icon: '📊',
+    icon: BarChart3,
     title: 'Analytics Dashboard',
     desc: 'Track historical disease trends across regions with interactive charts and exportable reports.',
   },
   {
-    icon: '👨‍🌾',
+    icon: Users,
     title: 'Expert Officer Network',
     desc: 'Connect directly with certified agriculture officers for field visits and personalized advice.',
   },
   {
-    icon: '🛡️',
+    icon: ShieldCheck,
     title: 'Crop Health Monitoring',
     desc: 'Continuous risk scoring for your fields so you can act proactively before losses occur.',
   },
@@ -68,7 +76,7 @@ const stats = [
 ];
 
 /* ─── Sub-components ─── */
-function FeatureCard({ icon, title, desc, delay }) {
+function FeatureCard({ icon: Icon, title, desc, delay }) {
   const [ref, inView] = useInView();
   return (
     <div
@@ -76,7 +84,9 @@ function FeatureCard({ icon, title, desc, delay }) {
       className={`feat-card${inView ? ' visible' : ''}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
-      <div className="feat-icon">{icon}</div>
+      <div className="feat-icon-badge">
+        <Icon className="feat-icon-svg" />
+      </div>
       <h3 className="feat-title">{title}</h3>
       <p className="feat-desc">{desc}</p>
     </div>
@@ -434,10 +444,29 @@ export default function HomePage() {
           border-color: #A5D6A7;
           transform: translateY(-4px) !important;
         }
-        .feat-icon {
-          font-size: 2rem;
-          margin-bottom: 1rem;
-          display: block;
+        .feat-icon-badge {
+          width: 52px;
+          height: 52px;
+          background: #ffffff;
+          border-radius: 14px;
+          border: 1.5px solid #E8F5E9;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 1.25rem;
+          box-shadow: 0 4px 12px rgba(27, 94, 32, 0.08);
+          transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .feat-card:hover .feat-icon-badge {
+          transform: scale(1.06);
+          box-shadow: 0 6px 16px rgba(27, 94, 32, 0.16);
+          border-color: #A5D6A7;
+        }
+        .feat-icon-svg {
+          width: 26px;
+          height: 26px;
+          color: #1B5E20;
+          stroke: #1B5E20;
         }
         .feat-title {
           font-size: 1.05rem;
@@ -682,7 +711,8 @@ export default function HomePage() {
         <PublicNav />
 
         {/* ── HERO ── */}
-        <section className="hero" id="hero">
+        <section className="hero" id="home">
+          <div id="hero" />
           <div className={`hero-bg${heroInView ? ' loaded' : ''}`} />
           <div className="hero-overlay" />
           <div className="hero-content" ref={heroRef}>

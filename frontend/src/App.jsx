@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage';
 
 // Pages
 import Login from './pages/Login';
+import Register from './pages/Register';
 import FarmerDashboard from './pages/farmer/FarmerDashboard';
 import NewCase from './pages/farmer/NewCase';
 import DiagnosisResult from './pages/farmer/DiagnosisResult';
@@ -41,6 +42,8 @@ export default function App() {
           <Routes>
           {/* Public Authentication Route */}
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/sign-in" element={<Register />} />
 
           {/* Root path */}
           <Route path="/" element={<RootRedirect />} />

@@ -1,34 +1,49 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { RiLeafLine } from 'react-icons/ri';
 
 export default function PublicNav() {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
+    const location = useLocation();
+    const navigate = useNavigate();
+    const isHome = location.pathname === '/';
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+    useEffect(() => {
+        const onScroll = () => setScrolled(window.scrollY > 20);
+        window.addEventListener('scroll', onScroll);
+        return () => window.removeEventListener('scroll', onScroll);
+    }, []);
 
-  const navLinks = [
-    { label: 'Home', href: '#home' },
-    { label: 'Features', href: '#features' },
-    { label: 'How It Works', href: '#how-it-works' },
-    { label: 'About', href: '#about' },
-    { label: 'Contact', href: '#contact' },
-  ];
+    const navLinks = [
+        { label: 'Home', href: '#home' },
+        { label: 'Features', href: '#features' },
+        { label: 'How It Works', href: '#how-it-works' },
+        { label: 'About', href: '#about' },
+        { label: 'Contact', href: '#contact' },
+    ];
 
-  const handleLinkClick = (e, href) => {
-    if (href === '#home') {
-      e.preventDefault();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
+    const handleLinkClick = (e, href) => {
+        if (!isHome) {
+            if (href === '#home') {
+                e.preventDefault();
+                navigate('/');
+            } else {
+                e.preventDefault();
+                navigate('/' + href);
+            }
+            return;
+        }
 
-  return (
-    <>
-      <style>{`
+        if (href === '#home') {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
+
+    return (
+        <>
+            <style>{`
         .pub-nav {
           position: fixed;
           top: 0; left: 0; right: 0;
@@ -206,70 +221,65 @@ export default function PublicNav() {
         }
       `}</style>
 
-      <nav className={`pub-nav${scrolled ? ' scrolled' : ''}`}>
-        <div className="pub-nav-inner">
-          <Link to="/" className="pub-nav-logo" onClick={(e) => handleLinkClick(e, '#home')}>
-            <div className="pub-nav-logo-badge">
-              <svg className="pub-nav-logo-svg" viewBox="0 0 24 24" fill="none" stroke="#1B5E20" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M7 20h10" />
-                <path d="M10 20c5.5-2.5.8-6.4 3-10" />
-                <path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z" />
-                <path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z" />
-              </svg>
-            </div>
-            <span className="pub-nav-logo-text">AgroGuard AI</span>
-          </Link>
+            <nav className={`pub-nav${scrolled || !isHome ? ' scrolled' : ''}`}>
+                <div className="pub-nav-inner">
+                    <Link to="/" className="pub-nav-logo" onClick={(e) => handleLinkClick(e, '#home')}>
+                        <div className="pub-nav-logo-badge text-emerald-700">
+                            <RiLeafLine size={24} />
+                        </div>
+                        <span className="pub-nav-logo-text">AgroGuard AI</span>
+                    </Link>
 
-          <ul className="pub-nav-links">
-            {navLinks.map(link => (
-              <li key={link.label}>
-                <a
-                  href={link.href}
-                  onClick={(e) => handleLinkClick(e, link.href)}
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
+                    <ul className="pub-nav-links">
+                        {navLinks.map(link => (
+                            <li key={link.label}>
+                                <a
+                                    href={link.href}
+                                    onClick={(e) => handleLinkClick(e, link.href)}
+                                >
+                                    {link.label}
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
 
-          <div className="pub-nav-actions">
-            <Link to="/login" className="btn-nav-ghost">Login</Link>
-            <Link to="/sign-in" className="btn-nav-primary">Sign In</Link>
-          </div>
+                    <div className="pub-nav-actions">
+                        <Link to="/login" className="btn-nav-ghost">Login</Link>
+                        <Link to="/sign-in" className="btn-nav-primary">Sign In</Link>
+                    </div>
 
-          <button
-            id="pub-nav-hamburger-btn"
-            className="pub-nav-hamburger"
-            onClick={() => setMenuOpen(o => !o)}
-            aria-label="Toggle menu"
-          >
-            <span />
-            <span />
-            <span />
-          </button>
-        </div>
+                    <button
+                        id="pub-nav-hamburger-btn"
+                        className="pub-nav-hamburger"
+                        onClick={() => setMenuOpen(o => !o)}
+                        aria-label="Toggle menu"
+                    >
+                        <span />
+                        <span />
+                        <span />
+                    </button>
+                </div>
 
-        {/* Mobile Menu */}
-        <div className={`pub-nav-mobile${menuOpen ? ' open' : ''}`}>
-          {navLinks.map(link => (
-            <a
-              key={link.label}
-              href={link.href}
-              onClick={(e) => {
-                handleLinkClick(e, link.href);
-                setMenuOpen(false);
-              }}
-            >
-              {link.label}
-            </a>
-          ))}
-          <div className="pub-nav-mobile-actions">
-            <Link to="/login" className="btn-nav-ghost" onClick={() => setMenuOpen(false)}>Login</Link>
-            <Link to="/sign-in" className="btn-nav-primary" onClick={() => setMenuOpen(false)}>Sign In</Link>
-          </div>
-        </div>
-      </nav>
-    </>
-  );
+                {/* Mobile Menu */}
+                <div className={`pub-nav-mobile${menuOpen ? ' open' : ''}`}>
+                    {navLinks.map(link => (
+                        <a
+                            key={link.label}
+                            href={link.href}
+                            onClick={(e) => {
+                                handleLinkClick(e, link.href);
+                                setMenuOpen(false);
+                            }}
+                        >
+                            {link.label}
+                        </a>
+                    ))}
+                    <div className="pub-nav-mobile-actions">
+                        <Link to="/login" className="btn-nav-ghost" onClick={() => setMenuOpen(false)}>Login</Link>
+                        <Link to="/sign-in" className="btn-nav-primary" onClick={() => setMenuOpen(false)}>Sign In</Link>
+                    </div>
+                </div>
+            </nav>
+        </>
+    );
 }

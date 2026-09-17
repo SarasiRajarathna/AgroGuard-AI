@@ -97,6 +97,11 @@ function mapCase(row) {
     verifiedSeverity: row.verifiedSeverity || row.verified_severity || null,
     verifiedAt: row.verifiedAt || row.verified_at || null,
     verifiedBy: row.verifiedBy ?? row.verified_by ?? null,
+    aiSource: row.aiSource || row.ai_source || 'AgroGuard Dual-Engine (MobileNetV3 + Google Gemini Vision)',
+    mlPrediction: row.mlPrediction || row.ml_prediction || null,
+    geminiPrediction: row.geminiPrediction || row.gemini_prediction || null,
+    agreement: row.agreement !== undefined ? row.agreement : (row.diagnosticTrace ? row.diagnosticTrace.agreement : true),
+    diagnosticTrace: row.diagnosticTrace || row.diagnostic_trace || null,
     submittedAt: row.submittedAt || row.created_at,
     updatedAt: row.updatedAt || row.updated_at,
   };
@@ -245,6 +250,11 @@ function toCaseInsert(c) {
     verified_severity: c.verifiedSeverity || c.verified_severity || null,
     verified_at: c.verifiedAt || c.verified_at || null,
     verified_by: c.verifiedBy ?? c.verified_by ?? null,
+    ai_source: c.aiSource || 'AgroGuard Dual-Engine (MobileNetV3 + Google Gemini Vision)',
+    ml_prediction: c.mlPrediction || null,
+    gemini_prediction: c.geminiPrediction || null,
+    agreement: c.agreement !== undefined ? c.agreement : true,
+    diagnostic_trace: c.diagnosticTrace || null,
   };
 }
 

@@ -141,17 +141,17 @@ export default function NewCase() {
 
     const timer1 = setTimeout(() => {
       setAnalysisProgress(40);
-      setAnalysisStage('Analyzing cellular symptoms with Gemini Vision & PlantVillage pathology model...');
+      setAnalysisStage('Classifying leaf lesions with MobileNetV3 ML Model (CropHelth/PlantVillage)...');
     }, 800);
 
     const timer2 = setTimeout(() => {
-      setAnalysisProgress(70);
-      setAnalysisStage('Retrieving real micro-climate telemetry from Open-Meteo for farm coordinates...');
+      setAnalysisProgress(65);
+      setAnalysisStage('Synthesizing pathology reasoning with Google Gemini Multimodal Vision...');
     }, 1600);
 
     const timer3 = setTimeout(() => {
-      setAnalysisProgress(90);
-      setAnalysisStage('Evaluating epidemiological spread risk and regional outbreak vectors...');
+      setAnalysisProgress(88);
+      setAnalysisStage('Evaluating dual-engine consensus and deterministic micro-climate spread risk...');
     }, 2400);
 
     try {

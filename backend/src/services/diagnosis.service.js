@@ -5,7 +5,7 @@ const dbService = require('./db.service');
 
 /**
  * End-to-end AI crop diagnosis pipeline:
- * Integrates Gemini Vision / PlantVillage visual pathology classifier
+ * Integrates Dual-Engine ML Classifier + Gemini Vision Multimodal Diagnosis
  * with real Open-Meteo micro-climate telemetry and epidemiological risk calculation.
  */
 async function runDiagnosisPipeline({
@@ -39,7 +39,7 @@ async function runDiagnosisPipeline({
     isLive: weather.current.isLive || false,
   };
 
-  // 3. Classify foliar pathology using Gemini Vision / PlantVillage model with multilingual output
+  // 3. Classify foliar pathology using Dual-Engine (MobileNetV3 + Gemini Multimodal Vision)
   const visionResult = await diagnosePlantImage({
     imageBase64,
     imageUrl,
@@ -74,7 +74,7 @@ async function runDiagnosisPipeline({
     nearbyCases = location && location.toLowerCase().includes('ampara') ? 3 : 1;
   }
 
-  // 5. Epidemiological Risk Calculation (Deterministic)
+  // 5. Epidemiological Risk Calculation (Deterministic - explainable disease spread index)
   const spreadRisk = calculateSpreadRisk({
     severity: visionResult.severity,
     humidity: weatherContext.humidity,
@@ -83,22 +83,28 @@ async function runDiagnosisPipeline({
     nearbyCases,
   });
 
-  // 6. Strict Triage Rules
-  // Rule 1: Low AI diagnostic confidence (< 75%) => must be escalated to extension officer immediately.
-  // Rule 2: Critical severity => escalated to officer.
-  // Rule 3: High confidence (>= 90%) and non-critical => confirmed.
-  // Rule 4: Moderate confidence (75-89%) => pending officer validation.
+  // 6. Strict Triage Rules & Human-in-the-Loop Consensus Verification
+  // Rule 1: Diagnostic disagreement between ML and Gemini => escalated for officer inspection.
+  // Rule 2: Low AI diagnostic confidence (< 75%) => escalated to extension officer.
+  // Rule 3: Critical foliar severity => escalated for emergency containment.
+  // Rule 4: High consensus agreement and confidence (>= 88%) => confirmed.
+  // Rule 5: Moderate confidence (75-87%) => pending validation.
   let status = 'pending';
   let escalationReason = null;
 
-  if (visionResult.isLowConfidence || visionResult.confidence < 75) {
+  const trace = visionResult.diagnosticTrace || {};
+
+  if (trace.agreement === false) {
+    status = 'escalated';
+    escalationReason = `Divergent AI diagnoses between MobileNetV3 ML Model (${trace.ml_prediction?.disease || 'Unknown'}) and Gemini Vision (${trace.gemini_prediction?.disease || 'Unknown'}). Escalated to Agricultural Extension Officer for manual field inspection.`;
+  } else if (visionResult.isLowConfidence || visionResult.confidence < 75) {
     status = 'escalated';
     escalationReason =
-      'Low AI diagnostic confidence (<75%). Automatically escalated to Agricultural Extension Officer for manual inspection.';
+      `Low AI diagnostic confidence (${visionResult.confidence}%). Automatically escalated to Agricultural Extension Officer for physical verification.`;
   } else if (visionResult.severity === 'critical') {
     status = 'escalated';
-    escalationReason = 'Critical foliar severity detected. Escalated for emergency containment inspection.';
-  } else if (visionResult.confidence >= 90) {
+    escalationReason = 'Critical foliar severity detected. Escalated for urgent containment inspection.';
+  } else if (visionResult.confidence >= 88) {
     status = 'confirmed';
   } else {
     status = 'pending';
@@ -120,6 +126,11 @@ async function runDiagnosisPipeline({
     estimatedLoss: visionResult.estimatedLoss,
     isLowConfidence: visionResult.isLowConfidence,
     language: visionResult.language,
+    aiSource: visionResult.aiSource,
+    diagnosticTrace: visionResult.diagnosticTrace,
+    mlPrediction: trace.ml_prediction,
+    geminiPrediction: trace.gemini_prediction,
+    agreement: trace.agreement,
   };
 }
 

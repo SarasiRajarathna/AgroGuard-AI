@@ -1,0 +1,49 @@
+{
+  "model_architecture": "MobileNetV3-Small",
+  "input_shape": [
+    1,
+    3,
+    224,
+    224
+  ],
+  "classes": [
+    "tomato_early_blight",
+    "tomato_late_blight",
+    "tomato_yellow_leaf_curl_virus",
+    "tomato_bacterial_spot",
+    "tomato_mold",
+    "tomato_septoria_leaf_spot",
+    "tomato_healthy",
+    "potato_early_blight",
+    "potato_late_blight",
+    "potato_healthy",
+    "chilli_anthracnose",
+    "chilli_leafcurl",
+    "chilli_healthy",
+    "corn_northern_leaf_blight",
+    "corn_rust",
+    "corn_gray_leaf_spot",
+    "corn_healthy",
+    "tea_brown_blight",
+    "tea_gray_blight",
+    "tea_anthracnose",
+    "tea_healthy",
+    "banana_fusarium_wilt",
+    "banana_sigatoka",
+    "banana_healthy"
+  ],
+  "num_classes": 24,
+  "best_macro_f1": 0.9412,
+  "best_val_accuracy": 0.9585,
+  "training_parameters": {
+    "optimizer": "AdamW",
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "scheduler": "CosineAnnealingLR",
+    "loss_function": "Class-Weighted CrossEntropyLoss",
+    "seed": 42
+  },
+  "exported_onnx": "agroguard_disease_classifier.onnx",
+  "exported_pt": "agroguard_mobilenetv3.pt",
+  "export_date": "2026-09-17"
+}

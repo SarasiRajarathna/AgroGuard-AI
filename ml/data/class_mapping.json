@@ -1,0 +1,228 @@
+{
+  "mappings": {
+    "tomato_early_blight": {
+      "agroguard_disease": "Early Blight",
+      "crop": "Tomato",
+      "scientific_name": "Alternaria solani",
+      "severity": "medium",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "tomato_late_blight": {
+      "agroguard_disease": "Late Blight",
+      "crop": "Tomato",
+      "scientific_name": "Phytophthora infestans",
+      "severity": "high",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "tomato_yellow_leaf_curl_virus": {
+      "agroguard_disease": "Leaf Curl Virus",
+      "crop": "Tomato",
+      "scientific_name": "Tomato Yellow Leaf Curl Begomovirus",
+      "severity": "medium",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "tomato_bacterial_spot": {
+      "agroguard_disease": "Bacterial Spot",
+      "crop": "Tomato",
+      "scientific_name": "Xanthomonas perforans",
+      "severity": "medium",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "tomato_mold": {
+      "agroguard_disease": "Leaf Mold",
+      "crop": "Tomato",
+      "scientific_name": "Passalora fulva",
+      "severity": "medium",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "tomato_septoria_leaf_spot": {
+      "agroguard_disease": "Septoria Leaf Spot",
+      "crop": "Tomato",
+      "scientific_name": "Septoria lycopersici",
+      "severity": "medium",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "tomato_healthy": {
+      "agroguard_disease": "Healthy Plant (No Disease)",
+      "crop": "Tomato",
+      "scientific_name": "Solanum lycopersicum",
+      "severity": "low",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "potato_early_blight": {
+      "agroguard_disease": "Early Blight",
+      "crop": "Potato",
+      "scientific_name": "Alternaria solani",
+      "severity": "medium",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "potato_late_blight": {
+      "agroguard_disease": "Late Blight",
+      "crop": "Potato",
+      "scientific_name": "Phytophthora infestans",
+      "severity": "high",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "potato_healthy": {
+      "agroguard_disease": "Healthy Plant (No Disease)",
+      "crop": "Potato",
+      "scientific_name": "Solanum tuberosum",
+      "severity": "low",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "chilli_anthracnose": {
+      "agroguard_disease": "Anthracnose",
+      "crop": "Chilli",
+      "scientific_name": "Colletotrichum capsici",
+      "severity": "high",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "chilli_leafcurl": {
+      "agroguard_disease": "Leaf Curl Virus",
+      "crop": "Chilli",
+      "scientific_name": "Chilli leaf curl begomovirus (ChiLCV)",
+      "severity": "medium",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "chilli_healthy": {
+      "agroguard_disease": "Healthy Plant (No Disease)",
+      "crop": "Chilli",
+      "scientific_name": "Capsicum annuum",
+      "severity": "low",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "corn_northern_leaf_blight": {
+      "agroguard_disease": "Northern Leaf Blight",
+      "crop": "Corn / Maize",
+      "scientific_name": "Exserohilum turcicum",
+      "severity": "high",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "corn_rust": {
+      "agroguard_disease": "Common Rust",
+      "crop": "Corn / Maize",
+      "scientific_name": "Puccinia sorghi",
+      "severity": "medium",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "corn_gray_leaf_spot": {
+      "agroguard_disease": "Gray Leaf Spot",
+      "crop": "Corn / Maize",
+      "scientific_name": "Cercospora zeae-maydis",
+      "severity": "medium",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "corn_healthy": {
+      "agroguard_disease": "Healthy Plant (No Disease)",
+      "crop": "Corn / Maize",
+      "scientific_name": "Zea mays",
+      "severity": "low",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "tea_brown_blight": {
+      "agroguard_disease": "Brown Blight",
+      "crop": "Tea",
+      "scientific_name": "Colletotrichum camelliae",
+      "severity": "medium",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "tea_gray_blight": {
+      "agroguard_disease": "Gray Blight",
+      "crop": "Tea",
+      "scientific_name": "Pestalotiopsis theae",
+      "severity": "medium",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "tea_anthracnose": {
+      "agroguard_disease": "Anthracnose",
+      "crop": "Tea",
+      "scientific_name": "Discula theae-sinensis",
+      "severity": "medium",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "tea_healthy": {
+      "agroguard_disease": "Healthy Plant (No Disease)",
+      "crop": "Tea",
+      "scientific_name": "Camellia sinensis",
+      "severity": "low",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "banana_fusarium_wilt": {
+      "agroguard_disease": "Panama Disease / Fusarium Wilt",
+      "crop": "Banana",
+      "scientific_name": "Fusarium oxysporum f. sp. cubense",
+      "severity": "critical",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "banana_sigatoka": {
+      "agroguard_disease": "Black Sigatoka",
+      "crop": "Banana",
+      "scientific_name": "Pseudocercospora fijiensis",
+      "severity": "high",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "banana_healthy": {
+      "agroguard_disease": "Healthy Plant (No Disease)",
+      "crop": "Banana",
+      "scientific_name": "Musa acuminata",
+      "severity": "low",
+      "status": "exact_match",
+      "is_supported": true
+    }
+  },
+  "unsupported_endemic_classes": [
+    {
+      "disease": "Blast Disease",
+      "crop": "Paddy / Rice",
+      "scientific_name": "Magnaporthe oryzae",
+      "reason": "Not in image training dataset (IEEE Paddy Doctor credential restricted). Handled via Multimodal Gemini Vision."
+    },
+    {
+      "disease": "Sheath Blight",
+      "crop": "Paddy / Rice",
+      "scientific_name": "Rhizoctonia solani",
+      "reason": "Not in image training dataset. Handled via Multimodal Gemini Vision."
+    },
+    {
+      "disease": "Weligama Coconut Leaf Wilt",
+      "crop": "Coconut",
+      "scientific_name": "Phytoplasma sp.",
+      "reason": "Sri Lankan endemic phytoplasma not present in open image datasets. Handled via Gemini Vision with mandatory low-confidence field officer escalation."
+    },
+    {
+      "disease": "Fall Armyworm",
+      "crop": "Corn / Maize",
+      "scientific_name": "Spodoptera frugiperda",
+      "reason": "Chewing insect larva / whorl damage, not a foliar leaf spot fungal class. Handled via Multimodal Gemini Vision."
+    },
+    {
+      "disease": "Tea Blister Blight",
+      "crop": "Tea",
+      "scientific_name": "Exobasidium vexans",
+      "reason": "Related tea foliar blights (Brown, Gray, Algal) are present; specific Exobasidium blister blight evaluated via Multimodal Gemini Vision."
+    }
+  ]
+}

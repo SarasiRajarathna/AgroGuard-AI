@@ -75,6 +75,9 @@ const SUPPORTED_CLASSES = modelMetadata?.classes || [
   'banana_fusarium_wilt',
   'banana_sigatoka',
   'banana_healthy',
+  'paddy_blast',
+  'paddy_sheath_blight',
+  'paddy_healthy',
 ];
 
 const CLASS_MAPPINGS = classMapping?.mappings || {
@@ -102,6 +105,9 @@ const CLASS_MAPPINGS = classMapping?.mappings || {
   banana_fusarium_wilt: { agroguard_disease: 'Panama Disease / Fusarium Wilt', crop: 'Banana', scientific_name: 'Fusarium oxysporum', severity: 'critical', is_supported: true },
   banana_sigatoka: { agroguard_disease: 'Black Sigatoka', crop: 'Banana', scientific_name: 'Pseudocercospora fijiensis', severity: 'high', is_supported: true },
   banana_healthy: { agroguard_disease: 'Healthy Plant (No Disease)', crop: 'Banana', scientific_name: 'Musa acuminata', severity: 'low', is_supported: true },
+  paddy_blast: { agroguard_disease: 'Blast Disease', crop: 'Paddy (Rice)', scientific_name: 'Magnaporthe oryzae', severity: 'high', is_supported: true },
+  paddy_sheath_blight: { agroguard_disease: 'Sheath Blight', crop: 'Paddy (Rice)', scientific_name: 'Rhizoctonia solani', severity: 'high', is_supported: true },
+  paddy_healthy: { agroguard_disease: 'Healthy Plant (No Disease)', crop: 'Paddy (Rice)', scientific_name: 'Oryza sativa', severity: 'low', is_supported: true },
 };
 
 /**
@@ -327,6 +333,7 @@ async function classifyWithMLModel({ imageBase64, imageUrl, cropType = '', sympt
     if (normCrop.includes('corn') || normCrop.includes('maize')) return c.startsWith('corn_');
     if (normCrop.includes('tea')) return c.startsWith('tea_');
     if (normCrop.includes('banana')) return c.startsWith('banana_');
+    if (normCrop.includes('paddy') || normCrop.includes('rice')) return c.startsWith('paddy_');
     return false;
   });
 
@@ -376,6 +383,8 @@ async function classifyWithMLModel({ imageBase64, imageUrl, cropType = '', sympt
       if (normSymptoms.includes('rust') && c.includes('rust')) logits[c] += 3.2;
       if (normSymptoms.includes('sigatoka') && c.includes('sigatoka')) logits[c] += 3.0;
       if (normSymptoms.includes('wilt') && c.includes('fusarium')) logits[c] += 3.0;
+      if ((normSymptoms.includes('blast') || normSymptoms.includes('spindle') || normSymptoms.includes('diamond')) && c.includes('blast')) logits[c] += 3.6;
+      if (normSymptoms.includes('sheath') && c.includes('sheath')) logits[c] += 3.2;
       if (normSymptoms.includes('healthy') && c.includes('healthy')) logits[c] += 3.5;
     }
   }
@@ -404,9 +413,9 @@ async function classifyWithMLModel({ imageBase64, imageUrl, cropType = '', sympt
     confidencePct = Math.min(96, Math.max(76, confidencePct));
   }
 
-  // If crop is unsupported in ML set (e.g. Paddy Blast, Coconut Wilt), flag as unsupported
+  // Endemic classes handled via multimodal vision (e.g. coconut phytoplasma, armyworm whorl frass)
   let isSupportedClass = isSupportedCrop;
-  if (normCrop.includes('paddy') || normCrop.includes('rice') || normCrop.includes('coconut')) {
+  if (normCrop.includes('coconut')) {
     isSupportedClass = false;
     confidencePct = Math.min(64, confidencePct);
   }

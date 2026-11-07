@@ -191,21 +191,33 @@
       "severity": "low",
       "status": "exact_match",
       "is_supported": true
+    },
+    "paddy_blast": {
+      "agroguard_disease": "Blast Disease",
+      "crop": "Paddy (Rice)",
+      "scientific_name": "Magnaporthe oryzae",
+      "severity": "high",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "paddy_sheath_blight": {
+      "agroguard_disease": "Sheath Blight",
+      "crop": "Paddy (Rice)",
+      "scientific_name": "Rhizoctonia solani",
+      "severity": "high",
+      "status": "exact_match",
+      "is_supported": true
+    },
+    "paddy_healthy": {
+      "agroguard_disease": "Healthy Plant (No Disease)",
+      "crop": "Paddy (Rice)",
+      "scientific_name": "Oryza sativa",
+      "severity": "low",
+      "status": "exact_match",
+      "is_supported": true
     }
   },
   "unsupported_endemic_classes": [
-    {
-      "disease": "Blast Disease",
-      "crop": "Paddy / Rice",
-      "scientific_name": "Magnaporthe oryzae",
-      "reason": "Not in image training dataset (IEEE Paddy Doctor credential restricted). Handled via Multimodal Gemini Vision."
-    },
-    {
-      "disease": "Sheath Blight",
-      "crop": "Paddy / Rice",
-      "scientific_name": "Rhizoctonia solani",
-      "reason": "Not in image training dataset. Handled via Multimodal Gemini Vision."
-    },
     {
       "disease": "Weligama Coconut Leaf Wilt",
       "crop": "Coconut",

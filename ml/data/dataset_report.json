@@ -19,7 +19,7 @@
   "split_counts": {
     "train": 87593,
     "validation": 18770,
-    "test": 18771
+    "test": 18770
   },
   "image_specifications": {
     "channels": 3,

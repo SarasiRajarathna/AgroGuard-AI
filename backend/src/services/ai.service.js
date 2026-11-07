@@ -372,6 +372,195 @@ const DISEASE_TRANSLATIONS = {
       ],
     },
   },
+
+  'Leaf Curl Virus': {
+    scientificName: 'Begomovirus',
+    en: {
+      name: 'Leaf Curl Virus',
+      symptoms: 'Upward puckering, thickening and severe curling of leaves with stunting of the plant.',
+      severity: 'medium',
+      estimatedLoss: '30%',
+      treatment: [
+        'Apply Imidacloprid 17.8% SL @ 0.3ml/L to control vector whiteflies/thrips.',
+        'Uproot and destroy severely stunted virus-infected plants.',
+        'Install yellow sticky traps (15 traps per acre) to monitor vector populations.',
+      ],
+      prevention: [
+        'Use virus-tolerant certified cultivars.',
+        'Keep field borders weed-free to eliminate alternative viral hosts.',
+      ],
+    },
+    si: {
+      name: 'කොළ කොඩවීම (Leaf Curl Virus)',
+      symptoms: 'කොළ ඉහළට හෝ පහළට රැලි ගැසීම, ඝන වීම සහ ශාකයේ වර්ධනය බාල වීම.',
+      severity: 'මධ්‍යස්ථ (Medium)',
+      estimatedLoss: '30%',
+      treatment: [
+        'සුදු මැස්සන් හා පැළ මැක්කන් මර්දනයට ඉමිඩැක්ලෝප්‍රිඩ් මිලිලීටර් 0.3/ලීටරයකට යොදන්න.',
+        'දැඩි ලෙස රෝගී වූ පැළ ගලවා විනාශ කරන්න.',
+        'කහ පැහැති ඇලෙන සුළු උගුල් අක්කරයකට 15ක් සවි කරන්න.',
+      ],
+      prevention: [
+        'රෝග ප්‍රතිරෝධී ප්‍රභේද වගා කරන්න.',
+        'නියරවල ඇති වල් පැලෑටි ඉවත් කර පිරිසිදුව තබාගන්න.',
+      ],
+    },
+    ta: {
+      name: 'இலை சுருள் நச்சுயிரி (Leaf Curl Virus)',
+      symptoms: 'இலைகள் மேல்நோக்கி சுருண்டு தடிமனாதல் மற்றும் செடியின் வளர்ச்சி குன்றுதல்.',
+      severity: 'மிதமான (Medium)',
+      estimatedLoss: '30%',
+      treatment: [
+        'இமிடாக்ளோபிரிட் 0.3மி.லி/லீ தெளித்து வெள்ளை ஈக்களைக் கட்டுப்படுத்தவும்.',
+        'பாதிக்கப்பட்ட செடிகளைப் பிடுங்கி அழிக்கவும்.',
+        'ஏக்கருக்கு 15 மஞ்சள் ஒட்டும் பொறிகளை அமைக்கவும்.',
+      ],
+      prevention: [
+        'நோய் எதிர்ப்புத் திறன் கொண்ட ரகங்களை நடவும்.',
+        'வரப்புகளை களைகள் இல்லாமல் தூய்மையாக வைத்திருக்கவும்.',
+      ],
+    },
+  },
+
+  'Anthracnose': {
+    scientificName: 'Colletotrichum sp.',
+    en: {
+      name: 'Anthracnose Foliar & Fruit Rot',
+      symptoms: 'Circular, sunken dark necrotic lesions with concentric rings of salmon-pink acervuli spores.',
+      severity: 'high',
+      estimatedLoss: '35%',
+      treatment: [
+        'Apply Azoxystrobin 23% SC @ 1ml/L or Carbendazim 50% WP @ 1g/L.',
+        'Harvest mature fruits promptly and remove diseased foliar debris.',
+        'Avoid overhead sprinkler irrigation during warm humid weather.',
+      ],
+      prevention: [
+        'Practice hot-water seed treatment at 50°C for 25 minutes before sowing.',
+        'Maintain balanced nitrogen fertilization to avoid lush succulent growth.',
+      ],
+    },
+    si: {
+      name: 'ඇන්ත්‍රැක්නෝස් රෝගය (Anthracnose)',
+      symptoms: 'කොළ සහ කරල් මත ගිලුණු දුඹුරු පැහැති වටකුරු ලප ඇතිවීම.',
+      severity: 'ඉහළ (High)',
+      estimatedLoss: '35%',
+      treatment: [
+        'ඇසොක්සිස්ට්‍රොබින් මිලිලීටර් 1/ලීටරයකට හෝ කාබෙන්ඩසිම් ග්‍රෑම් 1/ලීටරයකට ඉසින්න.',
+        'රෝගී වූ කොටස් වහාම ඉවත් කරන්න.',
+        'තෙතමනය අධික වේලාවල කොළ මතට ජලය ඉසීමෙන් වළකින්න.',
+      ],
+      prevention: [
+        'බීජ සිටුවීමට පෙර උණුසුම් ජලයෙන් ප්‍රතිකාර කරන්න.',
+        'පොටෑෂ් පොහොර සමතුලිතව යොදන්න.',
+      ],
+    },
+    ta: {
+      name: 'அந்திரக்னோஸ் நோய் (Anthracnose)',
+      symptoms: 'இலைகள் மற்றும் காய்களில் வட்டமான பள்ளமான கரும்புள்ளிகள் தோன்றுதல்.',
+      severity: 'அதிகம் (High)',
+      estimatedLoss: '35%',
+      treatment: [
+        'அசோக்சிஸ்ட்ரோபின் 1மி.லி/லீ அல்லது கார்பென்டசிம் 1கி/லீ தெளிக்கவும்.',
+        'பாதிக்கப்பட்ட பகுதிகளை அகற்றி அழிக்கவும்.',
+        'மாலை வேளைகளில் இலைகளில் நீர் தெளிப்பதைத் தவிர்க்கவும்.',
+      ],
+      prevention: [
+        'விதைப்பதற்கு முன் சுடுநீர் சிகிச்சை செய்யவும்.',
+        'சமச்சீர் உரமிடுதலைப் பின்பற்றவும்.',
+      ],
+    },
+  },
+
+  'Common Rust': {
+    scientificName: 'Puccinia sorghi',
+    en: {
+      name: 'Common Maize Foliar Rust',
+      symptoms: 'Small, circular to elongate golden-brown to cinnamon pustules scattered over both leaf surfaces.',
+      severity: 'medium',
+      estimatedLoss: '20%',
+      treatment: [
+        'Apply Mancozeb 75% WP @ 2.5g/L or Tebuconazole @ 1ml/L at onset of rust pustules.',
+        'Improve inter-row aeration by thinning excessive foliage.',
+      ],
+      prevention: [
+        'Plant resistant hybrids and observe recommended planting calendars.',
+        'Avoid planting downwind of older, infected maize plots.',
+      ],
+    },
+    si: {
+      name: 'බඩඉරිඟු මලකඩ රෝගය (Common Rust)',
+      symptoms: 'කොළ දෙපස කුඩා දුඹුරු පැහැති කුඩු වැනි බිබිලි (මලකඩ ලප) ඇතිවීම.',
+      severity: 'මධ්‍යස්ථ (Medium)',
+      estimatedLoss: '20%',
+      treatment: [
+        'මැන්කොසෙබ් ග්‍රෑම් 2.5/ලීටරයකට හෝ ටෙබුකොනසෝල් මිලිලීටර් 1/ලීටරයකට ඉසින්න.',
+        'හිරු එළිය සහ වාතාශ්‍රය ලැබෙන සේ පැල පරතරය තබාගන්න.',
+      ],
+      prevention: [
+        'මලකඩ රෝගයට ඔරොත්තු දෙන බීජ ප්‍රභේද වගා කරන්න.',
+      ],
+    },
+    ta: {
+      name: 'மக்காச்சோள துரு நோய் (Common Rust)',
+      symptoms: 'இலையின் இருபுறமும் தவிட்டு நிற துரு போன்ற சிறிய கொப்புளங்கள் தோன்றுதல்.',
+      severity: 'மிதமான (Medium)',
+      estimatedLoss: '20%',
+      treatment: [
+        'மேன்கோசெப் 2.5கி/லீ அல்லது டெபுகோனசோல் 1மி.லி/லீ தெளிக்கவும்.',
+        'செடிகளுக்கு இடையே போதுமான இடைவெளி விடவும்.',
+      ],
+      prevention: [
+        'துரு நோய் எதிர்ப்பு ரகங்களை பயிரிடவும்.',
+      ],
+    },
+  },
+
+  'Healthy Plant (No Disease)': {
+    scientificName: 'Physiologically Normal Foliage',
+    en: {
+      name: 'Healthy Foliar Specimen',
+      symptoms: 'Uniform chlorophyll pigmentation, turgid leaves, absence of fungal or viral lesions.',
+      severity: 'low',
+      estimatedLoss: '0%',
+      treatment: [
+        'No chemical or curative pesticide treatment required.',
+        'Maintain balanced basal and top-dressing fertilization schedule.',
+        'Continue routine weekly scouting for early pest appearance.',
+      ],
+      prevention: [
+        'Maintain optimal soil moisture and organic mulch cover.',
+        'Preserve beneficial natural predators in field boundaries.',
+      ],
+    },
+    si: {
+      name: 'නිරෝගී ශාකයකි (රෝග ලක්ෂණ නැත)',
+      symptoms: 'පත්‍රවල ඒකාකාර හරිත පැහැය, කිසිදු දිලීර හෝ වෛරස් ලප දක්නට නැත.',
+      severity: 'අවම (Low)',
+      estimatedLoss: '0%',
+      treatment: [
+        'රසායනික දිලීර නාශක භාවිතය අනවශ්‍යයි.',
+        'සාමාන්‍ය පරිදි නිසි වේලාවට පොහොර සහ ජලය සපයන්න.',
+        'සතිපතා ක්ෂේත්‍ර නිරීක්ෂණය අඛණ්ඩව කරගෙන යන්න.',
+      ],
+      prevention: [
+        'පාංශු තෙතමනය හා වසුන් නිසි පරිදි පාලනය කරන්න.',
+      ],
+    },
+    ta: {
+      name: 'ஆரோக்கியமான பயிர் (நோயற்ற இலை)',
+      symptoms: 'சீரான பச்சை நிறம், பூஞ்சை அல்லது நச்சுயிரி புள்ளிகள் எதுவும் இல்லை.',
+      severity: 'குறைவு (Low)',
+      estimatedLoss: '0%',
+      treatment: [
+        'பூச்சிக்கொல்லி அல்லது மருந்து தெளிப்பு தேவையில்லை.',
+        'முறையான உரமிடுதல் மற்றும் நீர்ப்பாசனத்தைப் பராமரிக்கவும்.',
+        'வழக்கமான பயிர் கண்காணிப்பைத் தொடரவும்.',
+      ],
+      prevention: [
+        'மண்ணின் ஈரப்பதத்தைப் பாதுகாக்கவும்.',
+      ],
+    },
+  },
 };
 
 /**
@@ -476,6 +665,16 @@ function evaluateDiagnosisAgreement(mlPred, geminiPred) {
       consensusLevel: 'single_engine',
       finalDiagnosis: geminiPred?.disease || mlPred?.disease || 'Foliar Abnormality',
       finalConfidence: geminiPred?.confidence || mlPred?.confidence || 70,
+    };
+  }
+
+  // When class is an endemic or unsupported taxon for the local ML model, yield primary authority to Gemini Vision
+  if (mlPred.isSupportedClass === false && geminiPred) {
+    return {
+      agreement: true,
+      consensusLevel: 'gemini_multimodal_primary',
+      finalDiagnosis: geminiPred.disease,
+      finalConfidence: geminiPred.confidence,
     };
   }
 
